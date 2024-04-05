@@ -133,8 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: <Widget>[
             TextField(
               keyboardType: const TextInputType.numberWithOptions(),
@@ -219,6 +218,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: CustomPaint(
                 painter: FabricPainter(),
               ),
+            ),
+            const SizedBox.square(
+              dimension: 10.0,
             ),
           ],
         ),
