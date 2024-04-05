@@ -90,6 +90,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void dispose() {
+    _fabricWidthController.dispose();
+    _pricePerMeterController.dispose();
+    _cuttingWidthController.dispose();
+    _panelWidthController.dispose();
+    _panelLengthController.dispose();
+    _panelQuantityController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
