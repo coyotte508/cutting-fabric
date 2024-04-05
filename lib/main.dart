@@ -32,9 +32,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _fabricWidth = 140;
+  double _fabricWidth = 140.0;
   final _fabricWidthController = TextEditingController();
-  double _pricePerMeter = 10;
+  double _cuttingWidth = 4.0;
+  final _cuttingWidthController = TextEditingController();
+  double _pricePerMeter = 10.0;
   final _pricePerMeterController = TextEditingController();
 
   var panel = {
@@ -51,12 +53,17 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _fabricWidthController.addListener(() {
       setState(() {
-        _fabricWidth = int.parse(_fabricWidthController.text);
+        _fabricWidth = double.parse(_fabricWidthController.text);
       });
     });
     _pricePerMeterController.addListener(() {
       setState(() {
         _pricePerMeter = double.parse(_pricePerMeterController.text);
+      });
+    });
+    _cuttingWidthController.addListener(() {
+      setState(() {
+        _cuttingWidth = double.parse(_cuttingWidthController.text);
       });
     });
     _panelWidthController.addListener(() {
@@ -76,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     _fabricWidthController.text = '$_fabricWidth';
     _pricePerMeterController.text = '$_pricePerMeter';
+    _cuttingWidthController.text = '$_cuttingWidth';
     _panelWidthController.text = '${panel["width"]}';
     _panelLengthController.text = '${panel["length"]}';
     _panelQuantityController.text = '${panel["quantity"]}';
@@ -98,9 +106,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 label: Text('Largeur de tissu en cm'),
               ),
               onChanged: (value) => setState(() {
-                _fabricWidth = int.parse(value);
+                _fabricWidth = double.parse(value);
               }),
               controller: _fabricWidthController,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            ),
+            TextField(
+              keyboardType: const TextInputType.numberWithOptions(),
+              decoration: const InputDecoration(
+                label: Text('Largeur de coupe en cm'),
+              ),
+              onChanged: (value) => setState(() {
+                _cuttingWidth = double.parse(value);
+              }),
+              controller: _cuttingWidthController,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             TextField(
