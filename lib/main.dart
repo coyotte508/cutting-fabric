@@ -31,6 +31,30 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
+class FabricPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+
+    final path = Path()
+      ..moveTo(0, 0)
+      ..lineTo(0, size.height)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width, 0)
+      ..close();
+
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   double _fabricWidth = 140.0;
   final _fabricWidthController = TextEditingController();
@@ -110,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextField(
               keyboardType: const TextInputType.numberWithOptions(),
@@ -183,7 +208,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 )),
               ],
-            )
+            ),
+            const SizedBox.square(
+              dimension: 10.0,
+            ),
+            // ignore: sized_box_for_whitespace
+            Container(
+              width: 280,
+              height: _fabricWidth,
+              child: CustomPaint(
+                painter: FabricPainter(),
+              ),
+            ),
           ],
         ),
       ),
