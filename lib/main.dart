@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'fabric_dialog.dart';
 
 void main() {
   runApp(const MyApp());
@@ -56,12 +57,9 @@ class FabricPainter extends CustomPainter {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String _fabricName = "Super tissu";
   double _fabricWidth = 140.0;
-  final _fabricWidthController = TextEditingController();
-  double _cuttingWidth = 4.0;
-  final _cuttingWidthController = TextEditingController();
-  double _pricePerMeter = 10.0;
-  final _pricePerMeterController = TextEditingController();
+  double _pricePerMeter = 50.0;
 
   var panel = {
     "width": 0.0,
@@ -75,21 +73,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    _fabricWidthController.addListener(() {
-      setState(() {
-        _fabricWidth = double.parse(_fabricWidthController.text);
-      });
-    });
-    _pricePerMeterController.addListener(() {
-      setState(() {
-        _pricePerMeter = double.parse(_pricePerMeterController.text);
-      });
-    });
-    _cuttingWidthController.addListener(() {
-      setState(() {
-        _cuttingWidth = double.parse(_cuttingWidthController.text);
-      });
-    });
     _panelWidthController.addListener(() {
       setState(() {
         panel["width"] = double.parse(_panelWidthController.text);
@@ -105,9 +88,6 @@ class _MyHomePageState extends State<MyHomePage> {
         panel["quantity"] = int.parse(_panelQuantityController.text);
       });
     });
-    _fabricWidthController.text = '$_fabricWidth';
-    _pricePerMeterController.text = '$_pricePerMeter';
-    _cuttingWidthController.text = '$_cuttingWidth';
     _panelWidthController.text = '${panel["width"]}';
     _panelLengthController.text = '${panel["length"]}';
     _panelQuantityController.text = '${panel["quantity"]}';
@@ -115,9 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _fabricWidthController.dispose();
-    _pricePerMeterController.dispose();
-    _cuttingWidthController.dispose();
     _panelWidthController.dispose();
     _panelLengthController.dispose();
     _panelQuantityController.dispose();
@@ -132,41 +109,85 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 0.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: ListView(
           children: <Widget>[
-            TextField(
-              keyboardType: const TextInputType.numberWithOptions(),
-              decoration: const InputDecoration(
-                label: Text('Largeur de tissu en cm'),
+            Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    title: Text('Tissu "$_fabricName"'),
+                    subtitle: const Text('Caractéristiques du tissu'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
+                    child: Table(
+                        border: const TableBorder(
+                            horizontalInside: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        )),
+                        children: [
+                          {
+                            "title": "Largeur de tissu",
+                            "value": '$_fabricWidth cm'
+                          },
+                          {
+                            "title": "Prix au mètre",
+                            "value": '$_pricePerMeter €'
+                          }
+                        ].map((e) {
+                          return TableRow(
+                            children: [
+                              TableCell(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Text(e["title"]!)),
+                              ),
+                              TableCell(
+                                child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 8.0),
+                                    child: Text(e["value"]!)),
+                              ),
+                            ],
+                          );
+                        }).toList()),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return FabricDialogContent(
+                                  fabricName: "Super tissu",
+                                  fabricWidth: _fabricWidth,
+                                  pricePerMeter: _pricePerMeter,
+                                  onSave: (
+                                          {required fabricName,
+                                          required fabricWidth,
+                                          required pricePerMeter}) =>
+                                      {
+                                    setState(() {
+                                      _fabricWidth = fabricWidth;
+                                      _pricePerMeter = pricePerMeter;
+                                      _fabricName = fabricName;
+                                    })
+                                  },
+                                );
+                              });
+                        },
+                        child: const Text('Modifier'),
+                      ),
+                    ],
+                  )
+                ],
               ),
-              onChanged: (value) => setState(() {
-                _fabricWidth = double.parse(value);
-              }),
-              controller: _fabricWidthController,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            TextField(
-              keyboardType: const TextInputType.numberWithOptions(),
-              decoration: const InputDecoration(
-                label: Text('Largeur de coupe en cm'),
-              ),
-              onChanged: (value) => setState(() {
-                _cuttingWidth = double.parse(value);
-              }),
-              controller: _cuttingWidthController,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            ),
-            TextField(
-              keyboardType: const TextInputType.numberWithOptions(),
-              decoration: const InputDecoration(
-                label: Text('Prix au mètre en €'),
-              ),
-              onChanged: (value) => setState(() {
-                _pricePerMeter = double.parse(value);
-              }),
-              controller: _pricePerMeterController,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             ),
             Row(
               children: <Widget>[
