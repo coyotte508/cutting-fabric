@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'fabric_dialog.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
 
 void main() {
   runApp(const MyApp());
@@ -61,6 +65,41 @@ class _MyHomePageState extends State<MyHomePage> {
   double _fabricWidth = 140.0;
   double _pricePerMeter = 50.0;
 
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<File> get _fabricsFile async {
+    final path = await _localPath;
+    return File('$path/fabrics.json');
+  }
+
+  Future<void> _writeFabrics() async {
+    final file = await _fabricsFile;
+    await file.writeAsString(jsonEncode([
+      {"name": _fabricName, "width": _fabricWidth, "price": _pricePerMeter}
+    ]));
+  }
+
+  Future<void> _readFabrics() async {
+    try {
+      final file = await _fabricsFile;
+      final contents = await file.readAsString();
+      final fabrics = jsonDecode(contents);
+      final fabric = fabrics[0];
+      setState(() {
+        _fabricName = fabric["name"];
+        _fabricWidth = fabric["width"];
+        _pricePerMeter = fabric["price"];
+      });
+      print(contents);
+    } catch (e) {
+      print(e);
+    }
+  }
+
   var panel = {
     "width": 0.0,
     "length": 0.0,
@@ -91,6 +130,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _panelWidthController.text = '${panel["width"]}';
     _panelLengthController.text = '${panel["length"]}';
     _panelQuantityController.text = '${panel["quantity"]}';
+
+    _readFabrics();
   }
 
   @override
@@ -177,6 +218,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                       _fabricWidth = fabricWidth;
                                       _pricePerMeter = pricePerMeter;
                                       _fabricName = fabricName;
+
+                                      _writeFabrics();
                                     })
                                   },
                                 );
