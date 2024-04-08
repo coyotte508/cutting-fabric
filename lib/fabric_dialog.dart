@@ -44,8 +44,8 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
     _fabricWidth = widget.fabricWidth;
     _pricePerMeter = widget.pricePerMeter;
     _fabricName = widget.fabricName;
-    _patternWidth = widget.pattern?.patternWidth ?? 10.0;
-    _patternLength = widget.pattern?.patternLength ?? 10.0;
+    _patternWidth = widget.pattern?.patternWidth ?? 20.0;
+    _patternLength = widget.pattern?.patternLength ?? 20.0;
     _hasPattern = widget.pattern != null;
 
     _fabricWidthController.addListener(() {

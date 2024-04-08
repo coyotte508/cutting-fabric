@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'fabric_dialog.dart';
+import 'fabric_painter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
@@ -34,30 +35,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class FabricPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.blue
-      ..strokeWidth = 2.0
-      ..style = PaintingStyle.stroke;
-
-    final path = Path()
-      ..moveTo(0, 0)
-      ..lineTo(0, size.height)
-      ..lineTo(size.width, size.height)
-      ..lineTo(size.width, 0)
-      ..close();
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return false;
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -158,6 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -226,19 +204,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                   pricePerMeter: _pricePerMeter,
                                   pattern: _pattern,
                                   onSave: (
-                                          {required fabricName,
-                                          required fabricWidth,
-                                          required pattern,
-                                          required pricePerMeter}) =>
-                                      {
+                                      {required fabricName,
+                                      required fabricWidth,
+                                      required pattern,
+                                      required pricePerMeter}) {
                                     setState(() {
                                       _fabricWidth = fabricWidth;
                                       _pricePerMeter = pricePerMeter;
                                       _fabricName = fabricName;
                                       _pattern = pattern;
-
-                                      _writeFabrics();
-                                    })
+                                    });
+                                    _writeFabrics();
                                   },
                                 );
                               });
@@ -298,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: 280,
               height: _fabricWidth,
               child: CustomPaint(
-                painter: FabricPainter(),
+                painter: FabricPainter(() => _pattern),
               ),
             ),
             const SizedBox.square(
