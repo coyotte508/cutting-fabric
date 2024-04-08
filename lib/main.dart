@@ -18,12 +18,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Découpe de tapisserie',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Découpe de tapisserie'),
     );
   }
 }
@@ -170,7 +170,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           {
                             "title": "Prix au mètre",
                             "value": '$_pricePerMeter €'
-                          }
+                          },
+                          {
+                            "title": "Motif",
+                            "value": _pattern != null
+                                ? '${_pattern!.patternWidth}x${_pattern!.patternLength} cm'
+                                : 'Non'
+                          },
                         ].map((e) {
                           return TableRow(
                             children: [
