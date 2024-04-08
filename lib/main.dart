@@ -64,6 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String _fabricName = "Super tissu";
   double _fabricWidth = 140.0;
   double _pricePerMeter = 50.0;
+  ({double patternWidth, double patternLength})? _pattern;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -79,25 +80,39 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _writeFabrics() async {
     final file = await _fabricsFile;
     await file.writeAsString(jsonEncode([
-      {"name": _fabricName, "width": _fabricWidth, "price": _pricePerMeter}
+      {
+        "name": _fabricName,
+        "width": _fabricWidth,
+        "price": _pricePerMeter,
+        "pattern": _pattern != null
+            ? {
+                "width": _pattern!.patternWidth,
+                "length": _pattern!.patternLength
+              }
+            : null
+      }
     ]));
   }
 
   Future<void> _readFabrics() async {
-    try {
-      final file = await _fabricsFile;
-      final contents = await file.readAsString();
-      final fabrics = jsonDecode(contents);
-      final fabric = fabrics[0];
-      setState(() {
-        _fabricName = fabric["name"];
-        _fabricWidth = fabric["width"];
-        _pricePerMeter = fabric["price"];
-      });
-      print(contents);
-    } catch (e) {
-      print(e);
+    final file = await _fabricsFile;
+    if (!await file.exists()) {
+      return;
     }
+    final contents = await file.readAsString();
+    final fabrics = jsonDecode(contents);
+    final fabric = fabrics[0];
+    setState(() {
+      _fabricName = fabric["name"];
+      _fabricWidth = fabric["width"];
+      _pricePerMeter = fabric["price"];
+      _pattern = fabric["pattern"] != null
+          ? (
+              patternWidth: fabric["pattern"]["width"],
+              patternLength: fabric["pattern"]["length"]
+            )
+          : null;
+    });
   }
 
   var panel = {
@@ -209,15 +224,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                   fabricName: "Super tissu",
                                   fabricWidth: _fabricWidth,
                                   pricePerMeter: _pricePerMeter,
+                                  pattern: _pattern,
                                   onSave: (
                                           {required fabricName,
                                           required fabricWidth,
+                                          required pattern,
                                           required pricePerMeter}) =>
                                       {
                                     setState(() {
                                       _fabricWidth = fabricWidth;
                                       _pricePerMeter = pricePerMeter;
                                       _fabricName = fabricName;
+                                      _pattern = pattern;
 
                                       _writeFabrics();
                                     })
