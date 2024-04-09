@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 class FabricPainter extends CustomPainter {
-  final (double width, ({double patternWidth, double patternLength})?)
+  final (
+    double width,
+    bool showPattern,
+    ({double patternWidth, double patternLength})?
+  )
       Function() _patternGetter;
 
   FabricPainter(this._patternGetter);
@@ -11,7 +15,7 @@ class FabricPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final (width, pattern) = _patternGetter();
+    final (width, showPattern, pattern) = _patternGetter();
 
     final ratio = size.width / width;
 
@@ -32,7 +36,7 @@ class FabricPainter extends CustomPainter {
 
     canvas.drawPath(path, paint);
 
-    if (pattern != null) {
+    if (pattern != null && showPattern) {
       final patternPaint = Paint()
         ..color = Colors.green
         ..strokeWidth = 1.0
@@ -62,7 +66,7 @@ class FabricPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     final oldPattern = (oldDelegate as FabricPainter).storedPattern;
     final oldWidth = oldDelegate.storedWidth;
-    final (newWidth, newPattern) = _patternGetter();
+    final (newWidth, showPattern, newPattern) = _patternGetter();
     if (oldPattern == newPattern) {
       return false;
     }

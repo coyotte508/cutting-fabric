@@ -6,13 +6,14 @@ import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 
 void main() {
   runApp(const MyApp());
 }
 
-final MAX_CANVAS_WIDTH = 700.0;
+const maxCanvasWidth = 700.0;
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -44,7 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String _fabricName = "Super tissu";
   double _fabricWidth = 140.0;
   double _pricePerMeter = 50.0;
+  bool _showPattern = true;
   ({double patternWidth, double patternLength})? _pattern;
+  late SharedPreferences prefs;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -127,6 +130,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _panelQuantityController.text = '${panel["quantity"]}';
 
     _readFabrics();
+
+    SharedPreferences.getInstance().then((prefs) {
+      this.prefs = prefs;
+      setState(() {
+        _showPattern = prefs.getBool("showPattern") ?? true;
+      });
+    });
   }
 
   @override
@@ -275,6 +285,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
               ],
             ),
+            ...(_pattern != null
+                ? [
+                    CheckboxListTile(
+                      value: _showPattern,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (value) {
+                        setState(() {
+                          _showPattern = value!;
+                        });
+                        prefs.setBool("showPattern", value!);
+                      },
+                      title: const Text("Afficher motif sur plan de coupe"),
+                    )
+                  ]
+                : []),
             const SizedBox.square(
               dimension: 10.0,
             ),
@@ -282,11 +307,12 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               child: LayoutBuilder(builder: (context, constraints) {
                 return CustomPaint(
-                  painter: FabricPainter(() => (_fabricWidth, _pattern)),
+                  painter: FabricPainter(
+                      () => (_fabricWidth, _showPattern, _pattern)),
                   size: Size(
-                      min(constraints.maxWidth, MAX_CANVAS_WIDTH),
+                      min(constraints.maxWidth, maxCanvasWidth),
                       200 *
-                          min(constraints.maxWidth, MAX_CANVAS_WIDTH) /
+                          min(constraints.maxWidth, maxCanvasWidth) /
                           _fabricWidth),
                 );
               }),
