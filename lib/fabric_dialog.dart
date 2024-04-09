@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 class FabricDialogContent extends StatefulWidget {
   final double fabricWidth;
@@ -50,7 +51,7 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
 
     _fabricWidthController.addListener(() {
       setState(() {
-        _fabricWidth = double.parse(_fabricWidthController.text);
+        _fabricWidth = max(10, double.parse(_fabricWidthController.text));
       });
     });
     _pricePerMeterController.addListener(() {

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +12,8 @@ void main() {
   runApp(const MyApp());
 }
 
+final MAX_CANVAS_WIDTH = 700.0;
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -18,12 +21,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Découpe de tapisserie',
+      title: 'Plans de coupe de tapisserie',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Découpe de tapisserie'),
+      home: const MyHomePage(title: 'Plans de coupe de tapisserie'),
     );
   }
 }
@@ -275,13 +278,18 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox.square(
               dimension: 10.0,
             ),
-            // ignore: sized_box_for_whitespace
             Container(
-              width: 280,
-              height: _fabricWidth,
-              child: CustomPaint(
-                painter: FabricPainter(() => _pattern),
-              ),
+              alignment: Alignment.center,
+              child: LayoutBuilder(builder: (context, constraints) {
+                return CustomPaint(
+                  painter: FabricPainter(() => (_fabricWidth, _pattern)),
+                  size: Size(
+                      min(constraints.maxWidth, MAX_CANVAS_WIDTH),
+                      200 *
+                          min(constraints.maxWidth, MAX_CANVAS_WIDTH) /
+                          _fabricWidth),
+                );
+              }),
             ),
             const SizedBox.square(
               dimension: 10.0,
