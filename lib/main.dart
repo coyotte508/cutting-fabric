@@ -8,6 +8,7 @@ import 'fabric_painter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
+import "fabric.dart";
 
 void main() {
   runApp(const MyApp());
@@ -42,11 +43,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String _fabricName = "Super tissu";
-  double _fabricWidth = 140.0;
-  double _pricePerMeter = 50.0;
+  FabricInfo _fabric = FabricInfo(
+    width: 140.0,
+    name: "Super tissu",
+    pricePerMeter: 50.0,
+  );
   bool _showPattern = true;
-  ({double patternWidth, double patternLength})? _pattern;
+
   late SharedPreferences prefs;
 
   Future<String> get _localPath async {
@@ -62,19 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> _writeFabrics() async {
     final file = await _fabricsFile;
-    await file.writeAsString(jsonEncode([
-      {
-        "name": _fabricName,
-        "width": _fabricWidth,
-        "price": _pricePerMeter,
-        "pattern": _pattern != null
-            ? {
-                "width": _pattern!.patternWidth,
-                "length": _pattern!.patternLength
-              }
-            : null
-      }
-    ]));
+    await file.writeAsString(jsonEncode([_fabric.toJson()]));
   }
 
   Future<void> _readFabrics() async {
@@ -86,23 +77,19 @@ class _MyHomePageState extends State<MyHomePage> {
     final fabrics = jsonDecode(contents);
     final fabric = fabrics[0];
     setState(() {
-      _fabricName = fabric["name"];
-      _fabricWidth = fabric["width"];
-      _pricePerMeter = fabric["price"];
-      _pattern = fabric["pattern"] != null
-          ? (
-              patternWidth: fabric["pattern"]["width"],
-              patternLength: fabric["pattern"]["length"]
-            )
-          : null;
+      _fabric = FabricInfo.fromJson(fabric);
     });
   }
 
-  var panel = {
-    "width": 0.0,
-    "length": 0.0,
-    "quantity": 1,
-  };
+  List<PanelInfo> panel = [
+    PanelInfo(
+        width: 50.0,
+        length: 50.0,
+        quantity: 1,
+        name: "Panel 1",
+        centerOnPattern: false)
+  ];
+
   final _panelWidthController = TextEditingController();
   final _panelLengthController = TextEditingController();
   final _panelQuantityController = TextEditingController();
@@ -112,22 +99,22 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     _panelWidthController.addListener(() {
       setState(() {
-        panel["width"] = double.parse(_panelWidthController.text);
+        panel[0].width = double.parse(_panelWidthController.text);
       });
     });
     _panelLengthController.addListener(() {
       setState(() {
-        panel["length"] = double.parse(_panelLengthController.text);
+        panel[0].length = double.parse(_panelLengthController.text);
       });
     });
     _panelQuantityController.addListener(() {
       setState(() {
-        panel["quantity"] = int.parse(_panelQuantityController.text);
+        panel[0].quantity = int.parse(_panelQuantityController.text);
       });
     });
-    _panelWidthController.text = '${panel["width"]}';
-    _panelLengthController.text = '${panel["length"]}';
-    _panelQuantityController.text = '${panel["quantity"]}';
+    _panelWidthController.text = '${panel[0].width}';
+    _panelLengthController.text = '${panel[0].length}';
+    _panelQuantityController.text = '${panel[0].quantity}';
 
     _readFabrics();
 
@@ -164,7 +151,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
-                    title: Text('Tissu "$_fabricName"'),
+                    title: Text('Tissu "${_fabric.name}"'),
                     subtitle: const Text('Caractéristiques du tissu'),
                   ),
                   Padding(
@@ -178,16 +165,16 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           {
                             "title": "Largeur de tissu",
-                            "value": '$_fabricWidth cm'
+                            "value": '${_fabric.width} cm'
                           },
                           {
                             "title": "Prix au mètre",
-                            "value": '$_pricePerMeter €'
+                            "value": '${_fabric.pricePerMeter} €'
                           },
                           {
                             "title": "Motif",
-                            "value": _pattern != null
-                                ? '${_pattern!.patternWidth}x${_pattern!.patternLength} cm'
+                            "value": _fabric.pattern != null
+                                ? '${_fabric.pattern!.width}x${_fabric.pattern!.length} cm'
                                 : 'Non'
                           },
                         ].map((e) {
@@ -218,20 +205,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               context: context,
                               builder: (BuildContext context) {
                                 return FabricDialogContent(
-                                  fabricName: "Super tissu",
-                                  fabricWidth: _fabricWidth,
-                                  pricePerMeter: _pricePerMeter,
-                                  pattern: _pattern,
-                                  onSave: (
-                                      {required fabricName,
-                                      required fabricWidth,
-                                      required pattern,
-                                      required pricePerMeter}) {
+                                  fabric: _fabric.clone(),
+                                  onSave: (FabricInfo fabric) {
                                     setState(() {
-                                      _fabricWidth = fabricWidth;
-                                      _pricePerMeter = pricePerMeter;
-                                      _fabricName = fabricName;
-                                      _pattern = pattern;
+                                      _fabric = fabric;
                                     });
                                     _writeFabrics();
                                   },
@@ -285,7 +262,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
               ],
             ),
-            ...(_pattern != null
+            ...(_fabric.pattern != null
                 ? [
                     CheckboxListTile(
                       value: _showPattern,
@@ -308,12 +285,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: LayoutBuilder(builder: (context, constraints) {
                 return CustomPaint(
                   painter: FabricPainter(
-                      () => (_fabricWidth, _showPattern, _pattern)),
+                      () => (_fabric.width, _showPattern, _fabric.pattern)),
                   size: Size(
                       min(constraints.maxWidth, maxCanvasWidth),
                       200 *
                           min(constraints.maxWidth, maxCanvasWidth) /
-                          _fabricWidth),
+                          _fabric.width),
                 );
               }),
             ),

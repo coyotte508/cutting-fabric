@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {
-  final (
-    double width,
-    bool showPattern,
-    ({double patternWidth, double patternLength})?
-  )
-      Function() _patternGetter;
+  final (double width, bool showPattern, PatternInfo?) Function()
+      _patternGetter;
 
   FabricPainter(this._patternGetter);
 
-  ({double patternWidth, double patternLength})? storedPattern;
+  PatternInfo? storedPattern;
   double? storedWidth;
 
   @override
@@ -42,9 +39,9 @@ class FabricPainter extends CustomPainter {
         ..strokeWidth = 1.0
         ..style = PaintingStyle.stroke;
 
-      for (var i = pattern.patternLength;
+      for (var i = pattern.length;
           i < size.height / ratio;
-          i += pattern.patternLength) {
+          i += pattern.length) {
         final path = Path()
           ..moveTo(0, i * ratio)
           ..lineTo(width * ratio, i * ratio);
@@ -52,7 +49,7 @@ class FabricPainter extends CustomPainter {
         canvas.drawPath(path, patternPaint);
       }
 
-      for (var i = pattern.patternWidth; i < width; i += pattern.patternWidth) {
+      for (var i = pattern.width; i < width; i += pattern.width) {
         final path = Path()
           ..moveTo(i * ratio, 0)
           ..lineTo(i * ratio, size.height);
@@ -76,7 +73,7 @@ class FabricPainter extends CustomPainter {
     if (newWidth != oldWidth) {
       return true;
     }
-    return oldPattern.patternWidth != newPattern.patternWidth ||
-        oldPattern.patternLength != newPattern.patternLength;
+    return oldPattern.width != newPattern.width ||
+        oldPattern.length != newPattern.length;
   }
 }

@@ -1,23 +1,15 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'fabric.dart';
 
 class FabricDialogContent extends StatefulWidget {
-  final double fabricWidth;
-  final double pricePerMeter;
-  final String fabricName;
-  final ({double patternWidth, double patternLength})? pattern;
-  final void Function(
-      {required double fabricWidth,
-      required double pricePerMeter,
-      required ({double patternWidth, double patternLength})? pattern,
-      required String fabricName}) onSave;
+  final FabricInfo fabric;
+
+  final void Function(FabricInfo fabric) onSave;
 
   const FabricDialogContent({
     super.key,
-    required this.fabricWidth,
-    required this.pricePerMeter,
-    required this.fabricName,
-    required this.pattern,
+    required this.fabric,
     required this.onSave,
   });
 
@@ -26,12 +18,7 @@ class FabricDialogContent extends StatefulWidget {
 }
 
 class _FabricDialogContentState extends State<FabricDialogContent> {
-  late double _fabricWidth;
-  late double _pricePerMeter;
-  late String _fabricName;
-  late double _patternWidth;
-  late double _patternLength;
-  late bool _hasPattern;
+  late FabricInfo _fabric;
 
   final _fabricWidthController = TextEditingController();
   final _pricePerMeterController = TextEditingController();
@@ -42,44 +29,43 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
   @override
   void initState() {
     super.initState();
-    _fabricWidth = widget.fabricWidth;
-    _pricePerMeter = widget.pricePerMeter;
-    _fabricName = widget.fabricName;
-    _patternWidth = widget.pattern?.patternWidth ?? 20.0;
-    _patternLength = widget.pattern?.patternLength ?? 20.0;
-    _hasPattern = widget.pattern != null;
+    _fabric = widget.fabric;
 
     _fabricWidthController.addListener(() {
       setState(() {
-        _fabricWidth = max(10, double.parse(_fabricWidthController.text));
+        _fabric.width = max(10, double.parse(_fabricWidthController.text));
       });
     });
     _pricePerMeterController.addListener(() {
       setState(() {
-        _pricePerMeter = double.parse(_pricePerMeterController.text);
+        _fabric.pricePerMeter = double.parse(_pricePerMeterController.text);
       });
     });
     _fabricNameController.addListener(() {
       setState(() {
-        _fabricName = _fabricNameController.text;
+        _fabric.name = _fabricNameController.text;
       });
     });
     _patternWidthController.addListener(() {
       setState(() {
-        _patternWidth = double.parse(_patternWidthController.text);
+        _fabric.pattern ??= PatternInfo();
+        _fabric.pattern!.width = double.parse(_patternWidthController.text);
       });
     });
     _patternLengthController.addListener(() {
       setState(() {
-        _patternLength = double.parse(_patternLengthController.text);
+        _fabric.pattern ??= PatternInfo();
+        _fabric.pattern!.length = double.parse(_patternLengthController.text);
       });
     });
 
-    _fabricWidthController.text = _fabricWidth.toString();
-    _pricePerMeterController.text = _pricePerMeter.toString();
-    _fabricNameController.text = _fabricName;
-    _patternWidthController.text = _patternWidth.toString();
-    _patternLengthController.text = _patternLength.toString();
+    _fabricWidthController.text = _fabric.width.toString();
+    _pricePerMeterController.text = _fabric.pricePerMeter.toString();
+    _fabricNameController.text = _fabric.name;
+    _patternWidthController.text =
+        (_fabric.pattern ?? PatternInfo()).width.toString();
+    _patternLengthController.text =
+        (_fabric.pattern ?? PatternInfo()).length.toString();
   }
 
   @override
@@ -98,17 +84,7 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
         actions: [
           TextButton(
               onPressed: () {
-                widget.onSave(
-                  fabricWidth: _fabricWidth,
-                  pricePerMeter: _pricePerMeter,
-                  fabricName: _fabricName,
-                  pattern: _hasPattern
-                      ? (
-                          patternLength: _patternLength,
-                          patternWidth: _patternWidth
-                        )
-                      : null,
-                );
+                widget.onSave(_fabric);
                 Navigator.of(context).pop();
               },
               child: const Text('Save'))
@@ -131,15 +107,22 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
               keyboardType: TextInputType.number,
             ),
             CheckboxListTile(
-              value: _hasPattern,
+              value: _fabric.pattern != null,
               onChanged: (value) {
                 setState(() {
-                  _hasPattern = value!;
+                  if (value == true) {
+                    _fabric.pattern = PatternInfo(
+                      width: double.parse(_patternWidthController.text),
+                      length: double.parse(_patternLengthController.text),
+                    );
+                  } else {
+                    _fabric.pattern = null;
+                  }
                 });
               },
               title: const Text("Avec motif"),
             ),
-            ..._hasPattern
+            ..._fabric.pattern != null
                 ? [
                     TextField(
                       controller: _patternWidthController,
