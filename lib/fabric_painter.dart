@@ -60,7 +60,7 @@ class FabricPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     final oldPattern = (oldDelegate as FabricPainter).storedPattern;
     final oldWidth = oldDelegate.storedWidth;
-    final (newWidth, showPattern, newPattern) = _patternGetter();
+    final (newWidth, _, newPattern) = _patternGetter();
     if (oldPattern == newPattern) {
       return false;
     }

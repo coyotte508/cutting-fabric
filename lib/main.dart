@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:upholstery_cutting_tool/panel_dialog.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
@@ -63,9 +63,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return File('$path/fabrics.json');
   }
 
+  Future<File> get _panelsFile async {
+    final path = await _localPath;
+    return File('$path/panels.json');
+  }
+
   Future<void> _writeFabrics() async {
     final file = await _fabricsFile;
     await file.writeAsString(jsonEncode([_fabric.toJson()]));
+  }
+
+  Future<void> _writePanels() async {
+    final file = await _panelsFile;
+    await file.writeAsString(jsonEncode(_panels.map((e) => e.toJson()).toList()));
   }
 
   Future<void> _readFabrics() async {
@@ -81,8 +91,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<PanelInfo> panels = [
-    PanelInfo(width: 50.0, length: 50.0, quantity: 1, name: "Panel 1", centerOnPattern: false, canRotate: false)
+  Future<void> _readPanels() async {
+    final file = await _panelsFile;
+    if (!await file.exists()) {
+      return;
+    }
+    final contents = await file.readAsString();
+    final List<dynamic> panels = jsonDecode(contents).map((e) => PanelInfo.fromJson(e)).toList();
+    setState(() {
+      _panels.clear();
+      for (var panel in panels) {
+        _panels.add(panel);
+      }
+    });
+  }
+
+  final List<PanelInfo> _panels = [
+    PanelInfo(width: 50.0, length: 50.0, quantity: 1, name: "Découpe 1", centerOnPattern: false, canRotate: false)
   ];
 
   @override
@@ -90,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _readFabrics();
+    _readPanels();
 
     SharedPreferences.getInstance().then((prefs) {
       this.prefs = prefs;
@@ -215,7 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           ]),
-                          ...panels.map((panel) {
+                          ..._panels.map((panel) {
                             return TableRow(
                               children: [
                                 TableCell(
@@ -247,7 +273,21 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ? Icons.screen_rotation_outlined
                                               : Icons.screen_lock_rotation_outlined)),
                                       IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return PanelDialogContent(
+                                                    panel: panel.clone(),
+                                                    onSave: (PanelInfo updatedPanel) {
+                                                      setState(() {
+                                                        _panels[_panels.indexOf(panel)] = updatedPanel;
+                                                      });
+                                                      _writePanels();
+                                                    },
+                                                  );
+                                                });
+                                          },
                                           visualDensity: VisualDensity.compact,
                                           icon: const Icon(Icons.edit)),
                                       IconButton(
@@ -263,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       TextButton(
                                                           onPressed: () {
                                                             setState(() {
-                                                              panels.remove(panel);
+                                                              _panels.remove(panel);
                                                             });
                                                             Navigator.of(context).pop();
                                                           },
@@ -293,7 +333,27 @@ class _MyHomePageState extends State<MyHomePage> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return PanelDialogContent(
+                                  panel: PanelInfo(
+                                      canRotate: false,
+                                      centerOnPattern: false,
+                                      length: 50.0,
+                                      name: "Découpe ${_panels.length + 1}",
+                                      quantity: 1,
+                                      width: 50.0),
+                                  onSave: (PanelInfo updatedPanel) {
+                                    setState(() {
+                                      _panels.add(updatedPanel);
+                                    });
+                                    _writePanels();
+                                  },
+                                );
+                              });
+                        },
                         child: const Text('Ajouter'),
                       ),
                     ],

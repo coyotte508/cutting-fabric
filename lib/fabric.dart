@@ -74,4 +74,30 @@ class PanelInfo {
   int quantity;
   bool centerOnPattern;
   bool canRotate;
+
+  static fromJson(Map<String, dynamic> json) {
+    return PanelInfo(
+      width: json["width"],
+      length: json["length"],
+      name: json["name"],
+      quantity: json["quantity"],
+      centerOnPattern: json["centerOnPattern"],
+      canRotate: json["canRotate"],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "width": width,
+      "length": length,
+      "name": name,
+      "quantity": quantity,
+      "centerOnPattern": centerOnPattern,
+      "canRotate": canRotate,
+    };
+  }
+
+  PanelInfo clone() {
+    return PanelInfo.fromJson(toJson());
+  }
 }
