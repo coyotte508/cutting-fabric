@@ -48,14 +48,12 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
     });
     _patternWidthController.addListener(() {
       setState(() {
-        _fabric.pattern ??= PatternInfo();
-        _fabric.pattern!.width = double.parse(_patternWidthController.text);
+        _fabric.pattern?.width = double.parse(_patternWidthController.text);
       });
     });
     _patternLengthController.addListener(() {
       setState(() {
-        _fabric.pattern ??= PatternInfo();
-        _fabric.pattern!.length = double.parse(_patternLengthController.text);
+        _fabric.pattern?.length = double.parse(_patternLengthController.text);
       });
     });
 

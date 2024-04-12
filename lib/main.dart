@@ -23,12 +23,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Plans de coupe de tapisserie',
+      title: 'Plan de coupe pour tissus',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Plans de coupe de tapisserie'),
+      home: const MyHomePage(title: 'Plan de coupe pour tissus'),
     );
   }
 }
@@ -218,6 +218,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
                     child: Table(
+                        columnWidths: const {
+                          0: FlexColumnWidth(1.0),
+                          1: FlexColumnWidth(1.0),
+                          2: IntrinsicColumnWidth(),
+                          3: IntrinsicColumnWidth(),
+                        },
                         border: const TableBorder(
                             horizontalInside: BorderSide(
                           color: Colors.grey,
@@ -254,9 +260,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                       child: Text("${panel.width}x${panel.length} cm")),
                                 ),
                                 TableCell(
-                                  child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Text(panel.quantity.toString())),
+                                  child: Center(
+                                      child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                          child: Text(panel.quantity.toString()))),
                                 ),
                                 TableCell(
                                   child: Row(
@@ -273,12 +280,27 @@ class _MyHomePageState extends State<MyHomePage> {
                                               ? Icons.screen_rotation_outlined
                                               : Icons.screen_lock_rotation_outlined)),
                                       IconButton(
+                                          tooltip: panel.centerOnPattern
+                                              ? "Centrer sur le motif"
+                                              : "Pas besoin de centrer sur le motif",
+                                          onPressed: _fabric.pattern != null
+                                              ? () {
+                                                  setState(() {
+                                                    panel.centerOnPattern = !panel.centerOnPattern;
+                                                  });
+                                                }
+                                              : null,
+                                          icon: Icon(panel.centerOnPattern
+                                              ? Icons.center_focus_strong
+                                              : Icons.center_focus_weak)),
+                                      IconButton(
                                           onPressed: () {
                                             showDialog(
                                                 context: context,
                                                 builder: (BuildContext context) {
                                                   return PanelDialogContent(
                                                     panel: panel.clone(),
+                                                    hasPattern: _fabric.pattern != null,
                                                     onSave: (PanelInfo updatedPanel) {
                                                       setState(() {
                                                         _panels[_panels.indexOf(panel)] = updatedPanel;
@@ -345,6 +367,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       name: "Découpe ${_panels.length + 1}",
                                       quantity: 1,
                                       width: 50.0),
+                                  hasPattern: _fabric.pattern != null,
                                   onSave: (PanelInfo updatedPanel) {
                                     setState(() {
                                       _panels.add(updatedPanel);

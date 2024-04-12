@@ -3,13 +3,14 @@ import 'fabric.dart';
 
 class PanelDialogContent extends StatefulWidget {
   final PanelInfo panel;
-
   final void Function(PanelInfo panel) onSave;
+  final bool hasPattern;
 
   const PanelDialogContent({
     super.key,
     required this.panel,
     required this.onSave,
+    required this.hasPattern,
   });
 
   @override
@@ -98,15 +99,19 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
               decoration: const InputDecoration(labelText: 'Nombre de découpes'),
               keyboardType: TextInputType.number,
             ),
-            CheckboxListTile(
-              value: _panel.centerOnPattern,
-              onChanged: (value) {
-                setState(() {
-                  _panel.centerOnPattern = value == true;
-                });
-              },
-              title: const Text("Centrer sur le motif"),
-            ),
+            ...(widget.hasPattern
+                ? [
+                    CheckboxListTile(
+                      value: _panel.centerOnPattern,
+                      onChanged: (value) {
+                        setState(() {
+                          _panel.centerOnPattern = value == true;
+                        });
+                      },
+                      title: const Text("Centrer sur le motif"),
+                    )
+                  ]
+                : []),
             CheckboxListTile(
               value: _panel.canRotate,
               onChanged: (value) {
