@@ -82,13 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   List<PanelInfo> panels = [
-    PanelInfo(
-        width: 50.0,
-        length: 50.0,
-        quantity: 1,
-        name: "Panel 1",
-        centerOnPattern: false,
-        canRotate: false)
+    PanelInfo(width: 50.0, length: 50.0, quantity: 1, name: "Panel 1", centerOnPattern: false, canRotate: false)
   ];
 
   @override
@@ -139,14 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                         )),
                         children: [
-                          {
-                            "title": "Largeur de tissu",
-                            "value": '${_fabric.width} cm'
-                          },
-                          {
-                            "title": "Prix au mètre",
-                            "value": '${_fabric.pricePerMeter} €'
-                          },
+                          {"title": "Largeur de tissu", "value": '${_fabric.width} cm'},
+                          {"title": "Prix au mètre", "value": '${_fabric.pricePerMeter} €'},
                           {
                             "title": "Motif",
                             "value": _fabric.pattern != null
@@ -158,15 +146,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             children: [
                               TableCell(
                                 child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Text(e["title"]!)),
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(e["title"]!)),
                               ),
                               TableCell(
                                 child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 8.0),
-                                    child: Text(e["value"]!)),
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(e["value"]!)),
                               ),
                             ],
                           );
@@ -216,19 +200,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         children: [
                           const TableRow(children: [
                             TableCell(
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text('Nom')),
+                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Nom')),
                             ),
                             TableCell(
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text('Dimensions')),
+                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Dimensions')),
                             ),
                             TableCell(
-                              child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text('Qté')),
+                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Qté')),
                             ),
                             TableCell(
                               child: Padding(
@@ -242,21 +220,16 @@ class _MyHomePageState extends State<MyHomePage> {
                               children: [
                                 TableCell(
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Text(panel.name)),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(panel.name)),
                                 ),
                                 TableCell(
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: Text(
-                                          "${panel.width}x${panel.length} cm")),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Text("${panel.width}x${panel.length} cm")),
                                 ),
                                 TableCell(
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                                       child: Text(panel.quantity.toString())),
                                 ),
                                 TableCell(
@@ -264,30 +237,50 @@ class _MyHomePageState extends State<MyHomePage> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
-                                          tooltip: panel.canRotate
-                                              ? "Rotation autorisée"
-                                              : "Rotation bloquée",
+                                          tooltip: panel.canRotate ? "Rotation autorisée" : "Rotation bloquée",
                                           onPressed: () {
                                             setState(() {
-                                              panel.canRotate =
-                                                  !panel.canRotate;
+                                              panel.canRotate = !panel.canRotate;
                                             });
                                           },
                                           icon: Icon(panel.canRotate
                                               ? Icons.screen_rotation_outlined
-                                              : Icons
-                                                  .screen_lock_rotation_outlined)),
+                                              : Icons.screen_lock_rotation_outlined)),
                                       IconButton(
                                           onPressed: () {},
                                           visualDensity: VisualDensity.compact,
                                           icon: const Icon(Icons.edit)),
                                       IconButton(
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return AlertDialog(
+                                                    title: const Text("Supprimer la découpe"),
+                                                    content: const Text(
+                                                        "Êtes-vous sûr de vouloir supprimer cette découpe ?"),
+                                                    actions: [
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              panels.remove(panel);
+                                                            });
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text("Oui")),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                          child: const Text("Non")),
+                                                    ],
+                                                  );
+                                                });
+                                          },
                                           padding: EdgeInsets.zero,
                                           visualDensity: VisualDensity.compact,
                                           color: Colors.red,
-                                          icon:
-                                              const Icon(Icons.delete_outlined))
+                                          icon: const Icon(Icons.delete_outlined))
                                     ],
                                   ),
                                 )
@@ -330,13 +323,9 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.center,
               child: LayoutBuilder(builder: (context, constraints) {
                 return CustomPaint(
-                  painter: FabricPainter(
-                      () => (_fabric.width, _showPattern, _fabric.pattern)),
-                  size: Size(
-                      min(constraints.maxWidth, maxCanvasWidth),
-                      200 *
-                          min(constraints.maxWidth, maxCanvasWidth) /
-                          _fabric.width),
+                  painter: FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern)),
+                  size: Size(min(constraints.maxWidth, maxCanvasWidth),
+                      200 * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
                 );
               }),
             ),

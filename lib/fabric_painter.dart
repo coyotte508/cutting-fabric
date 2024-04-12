@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {
-  final (double width, bool showPattern, PatternInfo?) Function()
-      _patternGetter;
+  final (double width, bool showPattern, PatternInfo?) Function() _patternGetter;
 
   FabricPainter(this._patternGetter);
 
@@ -39,9 +38,7 @@ class FabricPainter extends CustomPainter {
         ..strokeWidth = 1.0
         ..style = PaintingStyle.stroke;
 
-      for (var i = pattern.length;
-          i < size.height / ratio;
-          i += pattern.length) {
+      for (var i = pattern.length; i < size.height / ratio; i += pattern.length) {
         final path = Path()
           ..moveTo(0, i * ratio)
           ..lineTo(width * ratio, i * ratio);
@@ -73,7 +70,6 @@ class FabricPainter extends CustomPainter {
     if (newWidth != oldWidth) {
       return true;
     }
-    return oldPattern.width != newPattern.width ||
-        oldPattern.length != newPattern.length;
+    return oldPattern.width != newPattern.width || oldPattern.length != newPattern.length;
   }
 }

@@ -62,10 +62,8 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
     _fabricWidthController.text = _fabric.width.toString();
     _pricePerMeterController.text = _fabric.pricePerMeter.toString();
     _fabricNameController.text = _fabric.name;
-    _patternWidthController.text =
-        (_fabric.pattern ?? PatternInfo()).width.toString();
-    _patternLengthController.text =
-        (_fabric.pattern ?? PatternInfo()).length.toString();
+    _patternWidthController.text = (_fabric.pattern ?? PatternInfo()).width.toString();
+    _patternLengthController.text = (_fabric.pattern ?? PatternInfo()).length.toString();
   }
 
   @override
@@ -126,14 +124,12 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
                 ? [
                     TextField(
                       controller: _patternWidthController,
-                      decoration:
-                          const InputDecoration(labelText: 'Largeur du motif'),
+                      decoration: const InputDecoration(labelText: 'Largeur du motif'),
                       keyboardType: TextInputType.number,
                     ),
                     TextField(
                       controller: _patternLengthController,
-                      decoration:
-                          const InputDecoration(labelText: 'Longueur du motif'),
+                      decoration: const InputDecoration(labelText: 'Longueur du motif'),
                       keyboardType: TextInputType.number,
                     ),
                   ]

@@ -16,9 +16,7 @@ class FabricInfo {
       width: json["width"],
       name: json["name"],
       pricePerMeter: json["price"],
-      pattern: json["pattern"] != null
-          ? PatternInfo.fromJson(json["pattern"])
-          : null,
+      pattern: json["pattern"] != null ? PatternInfo.fromJson(json["pattern"]) : null,
     );
   }
 
