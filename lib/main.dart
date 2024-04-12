@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Plans de coupe de tapisserie',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Plans de coupe de tapisserie'),
@@ -81,40 +81,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  List<PanelInfo> panel = [
+  List<PanelInfo> panels = [
     PanelInfo(
         width: 50.0,
         length: 50.0,
         quantity: 1,
         name: "Panel 1",
-        centerOnPattern: false)
+        centerOnPattern: false,
+        canRotate: false)
   ];
-
-  final _panelWidthController = TextEditingController();
-  final _panelLengthController = TextEditingController();
-  final _panelQuantityController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _panelWidthController.addListener(() {
-      setState(() {
-        panel[0].width = double.parse(_panelWidthController.text);
-      });
-    });
-    _panelLengthController.addListener(() {
-      setState(() {
-        panel[0].length = double.parse(_panelLengthController.text);
-      });
-    });
-    _panelQuantityController.addListener(() {
-      setState(() {
-        panel[0].quantity = int.parse(_panelQuantityController.text);
-      });
-    });
-    _panelWidthController.text = '${panel[0].width}';
-    _panelLengthController.text = '${panel[0].length}';
-    _panelQuantityController.text = '${panel[0].quantity}';
 
     _readFabrics();
 
@@ -128,9 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _panelWidthController.dispose();
-    _panelLengthController.dispose();
-    _panelQuantityController.dispose();
     super.dispose();
   }
 
@@ -222,45 +198,115 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               ),
             ),
-            Row(
-              children: <Widget>[
-                Flexible(
-                    child: TextField(
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  decoration: const InputDecoration(
-                    label: Text('Longueur en cm'),
+            Card(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const ListTile(
+                    title: Text('Découpes à réaliser'),
                   ),
-                  onChanged: (value) => setState(() {}),
-                  controller: _panelLengthController,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                )),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Flexible(
-                    child: TextField(
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  decoration: const InputDecoration(
-                    label: Text('Largeur en cm'),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
+                    child: Table(
+                        border: const TableBorder(
+                            horizontalInside: BorderSide(
+                          color: Colors.grey,
+                          width: 1.0,
+                        )),
+                        children: [
+                          const TableRow(children: [
+                            TableCell(
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text('Nom')),
+                            ),
+                            TableCell(
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text('Dimensions')),
+                            ),
+                            TableCell(
+                              child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text('Qté')),
+                            ),
+                            TableCell(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(''),
+                              ),
+                            ),
+                          ]),
+                          ...panels.map((panel) {
+                            return TableRow(
+                              children: [
+                                TableCell(
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Text(panel.name)),
+                                ),
+                                TableCell(
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Text(
+                                          "${panel.width}x${panel.length} cm")),
+                                ),
+                                TableCell(
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: Text(panel.quantity.toString())),
+                                ),
+                                TableCell(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      IconButton(
+                                          tooltip: panel.canRotate
+                                              ? "Rotation autorisée"
+                                              : "Rotation bloquée",
+                                          onPressed: () {
+                                            setState(() {
+                                              panel.canRotate =
+                                                  !panel.canRotate;
+                                            });
+                                          },
+                                          icon: Icon(panel.canRotate
+                                              ? Icons.screen_rotation_outlined
+                                              : Icons
+                                                  .screen_lock_rotation_outlined)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          visualDensity: VisualDensity.compact,
+                                          icon: const Icon(Icons.edit)),
+                                      IconButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.zero,
+                                          visualDensity: VisualDensity.compact,
+                                          color: Colors.red,
+                                          icon:
+                                              const Icon(Icons.delete_outlined))
+                                    ],
+                                  ),
+                                )
+                              ],
+                            );
+                          })
+                        ]),
                   ),
-                  onChanged: (value) => setState(() {}),
-                  controller: _panelWidthController,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                )),
-                const SizedBox(
-                  width: 10.0,
-                ),
-                Flexible(
-                    child: TextField(
-                  keyboardType: const TextInputType.numberWithOptions(),
-                  decoration: const InputDecoration(
-                    label: Text('Quantité'),
-                  ),
-                  onChanged: (value) => setState(() {}),
-                  controller: _panelQuantityController,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                )),
-              ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {},
+                        child: const Text('Ajouter'),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
             ...(_fabric.pattern != null
                 ? [

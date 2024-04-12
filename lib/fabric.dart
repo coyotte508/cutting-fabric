@@ -67,6 +67,7 @@ class PanelInfo {
     required this.name,
     required this.quantity,
     required this.centerOnPattern,
+    required this.canRotate,
   });
 
   double width;
@@ -74,4 +75,5 @@ class PanelInfo {
   String name;
   int quantity;
   bool centerOnPattern;
+  bool canRotate;
 }
