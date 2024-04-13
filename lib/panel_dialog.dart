@@ -37,12 +37,12 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
     });
     _panelWidthController.addListener(() {
       setState(() {
-        _panel.width = double.parse(_panelWidthController.text);
+        _panel.width = (double.parse(_panelWidthController.text) * 10).round();
       });
     });
     _panelLengthController.addListener(() {
       setState(() {
-        _panel.length = double.parse(_panelLengthController.text);
+        _panel.length = (double.parse(_panelLengthController.text) * 10).round();
       });
     });
     _panelQuantityController.addListener(() {
@@ -52,8 +52,8 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
     });
 
     _panelNameController.text = _panel.name;
-    _panelWidthController.text = _panel.width.toString();
-    _panelLengthController.text = _panel.length.toString();
+    _panelWidthController.text = (_panel.width / 10.0).toString();
+    _panelLengthController.text = (_panel.length / 10.0).toString();
     _panelQuantityController.text = _panel.quantity.toString();
   }
 

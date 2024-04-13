@@ -1,7 +1,7 @@
 class FabricInfo {
-  double width;
+  int width;
   String name;
-  double pricePerMeter;
+  int pricePerMeter;
   PatternInfo? pattern;
 
   FabricInfo({
@@ -36,12 +36,12 @@ class FabricInfo {
 
 class PatternInfo {
   PatternInfo({
-    this.width = 20.0,
-    this.length = 20.0,
+    this.width = 200,
+    this.length = 200,
   });
 
-  double width;
-  double length;
+  int width;
+  int length;
 
   static fromJson(Map<String, dynamic> json) {
     return PatternInfo(
@@ -68,8 +68,8 @@ class PanelInfo {
     required this.canRotate,
   });
 
-  double width;
-  double length;
+  int width;
+  int length;
   String name;
   int quantity;
   bool centerOnPattern;

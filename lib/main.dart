@@ -44,9 +44,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   FabricInfo _fabric = FabricInfo(
-    width: 140.0,
+    width: 1400,
     name: "Super tissu",
-    pricePerMeter: 50.0,
+    pricePerMeter: 5000,
   );
   bool _showPattern = true;
 
@@ -107,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final List<PanelInfo> _panels = [
-    PanelInfo(width: 50.0, length: 50.0, quantity: 1, name: "Découpe 1", centerOnPattern: false, canRotate: false)
+    PanelInfo(width: 500, length: 500, quantity: 1, name: "Découpe 1", centerOnPattern: false, canRotate: false)
   ];
 
   @override
@@ -159,12 +159,12 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                         )),
                         children: [
-                          {"title": "Largeur de tissu", "value": '${_fabric.width} cm'},
-                          {"title": "Prix au mètre", "value": '${_fabric.pricePerMeter} €'},
+                          {"title": "Largeur de tissu", "value": '${_fabric.width / 10.0} cm'},
+                          {"title": "Prix au mètre", "value": '${_fabric.pricePerMeter / 100.0} €'},
                           {
                             "title": "Motif",
                             "value": _fabric.pattern != null
-                                ? '${_fabric.pattern!.width}x${_fabric.pattern!.length} cm'
+                                ? '${_fabric.pattern!.width / 10.0}x${_fabric.pattern!.length / 10.0} cm'
                                 : 'Non'
                           },
                         ].map((e) {
@@ -257,7 +257,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 TableCell(
                                   child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Text("${panel.width}x${panel.length} cm")),
+                                      child: Text("${panel.width / 10.0}x${panel.length / 10.0} cm")),
                                 ),
                                 TableCell(
                                   child: Center(
@@ -363,10 +363,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   panel: PanelInfo(
                                       canRotate: false,
                                       centerOnPattern: false,
-                                      length: 50.0,
+                                      length: 500,
                                       name: "Découpe ${_panels.length + 1}",
                                       quantity: 1,
-                                      width: 50.0),
+                                      width: 500),
                                   hasPattern: _fabric.pattern != null,
                                   onSave: (PanelInfo updatedPanel) {
                                     setState(() {
@@ -407,8 +407,9 @@ class _MyHomePageState extends State<MyHomePage> {
               child: LayoutBuilder(builder: (context, constraints) {
                 return CustomPaint(
                   painter: FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern)),
+                  // 2m length
                   size: Size(min(constraints.maxWidth, maxCanvasWidth),
-                      200 * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
+                      2000 * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
                 );
               }),
             ),

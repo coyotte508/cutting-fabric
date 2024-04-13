@@ -5,17 +5,17 @@ class PanelPlacement {
   PanelPlacement({required this.panel, required this.x, required this.y});
 
   final PanelInfo panel;
-  final double x;
-  final double y;
+  final int x;
+  final int y;
 }
 
 class Rectangle {
   Rectangle({required this.width, required this.length, required this.x, required this.y});
 
-  final double width;
-  final double length;
-  final double x;
-  final double y;
+  final int width;
+  final int length;
+  final int x;
+  final int y;
 
   get area => width * length;
 }
@@ -25,10 +25,10 @@ class PanelPlacements {
 
   final List<PanelPlacement> placements = [];
   final List<Rectangle> availableSpaces = [];
-  final double fabricWidth;
+  final int fabricWidth;
 
   get totalLength =>
-      placements.fold(0.0, (previousValue, element) => max(previousValue, element.y + element.panel.length));
+      placements.fold(0, (previousValue, element) => max(previousValue, element.y + element.panel.length));
 
   /// Uses BM67 box packing algorithm to place panels on fabric: https://stackoverflow.com/a/45685043/835629
   addPanel(PanelInfo panel) {

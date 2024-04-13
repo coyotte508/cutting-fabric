@@ -33,12 +33,12 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
 
     _fabricWidthController.addListener(() {
       setState(() {
-        _fabric.width = max(10, double.parse(_fabricWidthController.text));
+        _fabric.width = max(100, (double.parse(_fabricWidthController.text) * 10).round());
       });
     });
     _pricePerMeterController.addListener(() {
       setState(() {
-        _fabric.pricePerMeter = double.parse(_pricePerMeterController.text);
+        _fabric.pricePerMeter = (double.parse(_pricePerMeterController.text) * 100).round();
       });
     });
     _fabricNameController.addListener(() {
@@ -48,20 +48,20 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
     });
     _patternWidthController.addListener(() {
       setState(() {
-        _fabric.pattern?.width = double.parse(_patternWidthController.text);
+        _fabric.pattern?.width = (double.parse(_patternWidthController.text) * 10).round();
       });
     });
     _patternLengthController.addListener(() {
       setState(() {
-        _fabric.pattern?.length = double.parse(_patternLengthController.text);
+        _fabric.pattern?.length = (double.parse(_patternLengthController.text) * 10).round();
       });
     });
 
-    _fabricWidthController.text = _fabric.width.toString();
-    _pricePerMeterController.text = _fabric.pricePerMeter.toString();
+    _fabricWidthController.text = (_fabric.width / 10.0).toString();
+    _pricePerMeterController.text = (_fabric.pricePerMeter / 100.0).toString();
     _fabricNameController.text = _fabric.name;
-    _patternWidthController.text = (_fabric.pattern ?? PatternInfo()).width.toString();
-    _patternLengthController.text = (_fabric.pattern ?? PatternInfo()).length.toString();
+    _patternWidthController.text = ((_fabric.pattern ?? PatternInfo()).width / 10.0).toString();
+    _patternLengthController.text = ((_fabric.pattern ?? PatternInfo()).length / 10.0).toString();
   }
 
   @override
@@ -108,8 +108,8 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
                 setState(() {
                   if (value == true) {
                     _fabric.pattern = PatternInfo(
-                      width: double.parse(_patternWidthController.text),
-                      length: double.parse(_patternLengthController.text),
+                      width: (double.parse(_patternWidthController.text) * 10).round(),
+                      length: (double.parse(_patternLengthController.text) * 10).round(),
                     );
                   } else {
                     _fabric.pattern = null;

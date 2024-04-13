@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {
-  final (double width, bool showPattern, PatternInfo?) Function() _patternGetter;
+  final (int width, bool showPattern, PatternInfo?) Function() _patternGetter;
 
   FabricPainter(this._patternGetter);
 
   PatternInfo? storedPattern;
-  double? storedWidth;
+  int? storedWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
