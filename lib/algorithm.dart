@@ -1,4 +1,5 @@
 import "dart:math";
+import './ordered_map.dart';
 import 'fabric.dart';
 
 class PanelPlacement {
@@ -7,6 +8,13 @@ class PanelPlacement {
   final PanelInfo panel;
   final int x;
   final int y;
+
+  bool intersects(PanelPlacement other) {
+    return x < other.x + other.panel.width &&
+        x + panel.width > other.x &&
+        y < other.y + other.panel.length &&
+        y + panel.length > other.y;
+  }
 }
 
 class Rectangle {
@@ -24,53 +32,120 @@ class PanelPlacements {
   PanelPlacements({required this.fabricWidth});
 
   final List<PanelPlacement> placements = [];
-  final List<Rectangle> availableSpaces = [];
+
+  /// For a list of X coordinates, lists all panels that intersect with that X coordinate
+  final OrderedMap<OrderedMap<PanelPlacement>> panelsByX = OrderedMap();
+
+  /// For a list of Y coordinates, lists all panels that intersect with that Y coordinate
+  final OrderedMap<OrderedMap<PanelPlacement>> panelsByY = OrderedMap();
+
+  // todo: maintain a list of "gaps" instead of computing them on the fly
+  // it could even contain invalid gaps that would be invalidated when checked next time
+
   final int fabricWidth;
 
   get totalLength =>
       placements.fold(0, (previousValue, element) => max(previousValue, element.y + element.panel.length));
 
-  /// Uses BM67 box packing algorithm to place panels on fabric: https://stackoverflow.com/a/45685043/835629
-  addPanel(PanelInfo panel) {
-    // todo: handle rotation, centering on pattern
-    for (var availableSpace in availableSpaces) {
-      if (availableSpace.width >= panel.width && availableSpace.length >= panel.length) {
-        placements.add(PanelPlacement(panel: panel, x: availableSpace.x, y: availableSpace.y));
+  addPanel(PanelInfo panel, int x, int y) {
+    final placement = PanelPlacement(panel: panel, x: x, y: y);
+    placements.add(placement);
 
-        availableSpaces.remove(availableSpace);
+    final vStart = panelsByX.putIfAbsent(x, OrderedMap());
+    final vEnd = panelsByX.putIfAbsent(x + panel.width, OrderedMap());
 
-        if (availableSpace.width > panel.width) {
-          availableSpaces.add(Rectangle(
-              width: availableSpace.width - panel.width,
-              length: panel.length,
-              x: availableSpace.x + panel.width,
-              y: availableSpace.y));
-        }
-
-        if (availableSpace.length > panel.length) {
-          availableSpaces.add(Rectangle(
-              width: panel.width,
-              length: availableSpace.length - panel.length,
-              x: availableSpace.x,
-              y: availableSpace.y + panel.length));
-        }
-
-        // todo: instead of sorting every time, insert in sorted order
-        availableSpaces.sort((a, b) => a.area.compareTo(b.area));
-
-        // todo: merge adjacent spaces of the same length / width
-        return;
+    for (final item in (panelsByX.beforePointer(vStart) ?? OrderedMap())) {
+      if (item.v.x + item.v.panel.width >= x) {
+        panelsByX.atPointer(vStart)?.put(item.k, item.v);
       }
     }
 
-    placements.add(PanelPlacement(panel: panel, x: 0, y: totalLength));
+    for (final item in (panelsByX.atPointer(vEnd) ?? OrderedMap())) {
+      if (item.v.x <= x) {
+        panelsByX.atPointer(vEnd)?.put(item.k, item.v);
+      }
+    }
 
-    if (panel.width < fabricWidth) {
-      availableSpaces
-          .add(Rectangle(width: fabricWidth - panel.width, length: panel.length, x: panel.width, y: placements.last.y));
+    for (final v in panelsByX.rangedPointerValues(vStart, vEnd)) {
+      v.put(y, placement);
+    }
 
-      // todo: instead of sorting every time, insert in sorted order
-      availableSpaces.sort((a, b) => a.area.compareTo(b.area));
+    final hStart = panelsByY.putIfAbsent(y, OrderedMap());
+    final hEnd = panelsByY.putIfAbsent(y + panel.length, OrderedMap());
+
+    for (final item in (panelsByY.beforePointer(hStart) ?? OrderedMap())) {
+      if (item.v.y + item.v.panel.length >= y) {
+        panelsByY.atPointer(hStart)?.put(item.k, item.v);
+      }
+    }
+
+    for (final item in (panelsByY.atPointer(hEnd) ?? OrderedMap())) {
+      if (item.v.y <= y) {
+        panelsByY.atPointer(hEnd)?.put(item.k, item.v);
+      }
+    }
+
+    for (final h in panelsByY.rangedPointerValues(hStart, hEnd)) {
+      h.put(x, placement);
+    }
+  }
+
+  /// Returns a tuple with a boolean indicating if the panel can be placed at the given coordinates and if not,
+  ///  an integer indicating where the panel can be moved to the right to avoid the collision
+  ({bool ok, int? moveRightTo}) canPlacePanel(PanelInfo panel, int x, int y) {
+    final placement = PanelPlacement(panel: panel, x: x, y: y);
+
+    for (final v in panelsByX.rangedValuesEnglobing(x, x + panel.width)) {
+      for (final item in v.rangedValuesEnglobing(y, y + panel.length)) {
+        if (placement.intersects(item)) {
+          return (ok: false, moveRightTo: item.x + item.panel.width);
+        }
+      }
+    }
+
+    return (ok: true, moveRightTo: null);
+  }
+
+  void placePanelBottomLeft(PanelInfo panel) {
+    var iteratorY = panelsByY.iterator;
+
+    if (!iteratorY.moveNext()) {
+      addPanel(panel, 0, 0);
+      return;
+    }
+
+    var y = iteratorY.current;
+    while (iteratorY.moveNext()) {
+      final nextY = iteratorY.current;
+
+      final gaps = _findGapsAtY(y.v, panel.width);
+
+      for (final gap in gaps) {
+        for (var x = gap.start; x <= gap.end - panel.width;) {
+          final canPlace = canPlacePanel(panel, x, y.k);
+          if (canPlace.ok) {
+            addPanel(panel, x, y.k);
+            return;
+          } else {
+            x = canPlace.moveRightTo!;
+          }
+        }
+      }
+
+      y = nextY;
+    }
+    addPanel(panel, 0, totalLength);
+  }
+
+  Iterable<({int start, int end})> _findGapsAtY(OrderedMap<PanelPlacement> panels, int minWidth) sync* {
+    var prevX = 0;
+
+    for (final item in panels) {
+      if (item.v.x - prevX >= minWidth) {
+        yield (start: prevX, end: item.v.x);
+      }
+
+      prevX = item.v.x + item.v.panel.width;
     }
   }
 }
