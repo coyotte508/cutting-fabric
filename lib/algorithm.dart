@@ -33,8 +33,8 @@ class PanelPlacements {
 
   final List<PanelPlacement> placements = [];
 
-  /// For a list of X coordinates, lists all panels that intersect with that X coordinate
-  final OrderedMap<OrderedMap<PanelPlacement>> panelsByX = OrderedMap();
+  // /// For a list of X coordinates, lists all panels that intersect with that X coordinate
+  // final OrderedMap<OrderedMap<PanelPlacement>> panelsByX = OrderedMap();
 
   /// For a list of Y coordinates, lists all panels that intersect with that Y coordinate
   final OrderedMap<OrderedMap<PanelPlacement>> panelsByY = OrderedMap();
@@ -51,24 +51,24 @@ class PanelPlacements {
     final placement = PanelPlacement(panel: panel, x: x, y: y);
     placements.add(placement);
 
-    final vStart = panelsByX.putIfAbsent(x, OrderedMap());
-    final vEnd = panelsByX.putIfAbsent(x + panel.width, OrderedMap());
+    // final vStart = panelsByX.putIfAbsent(x, OrderedMap());
+    // final vEnd = panelsByX.putIfAbsent(x + panel.width, OrderedMap());
 
-    for (final item in (panelsByX.beforePointer(vStart) ?? OrderedMap())) {
-      if (item.v.x + item.v.panel.width >= x) {
-        panelsByX.atPointer(vStart)?.put(item.k, item.v);
-      }
-    }
+    // for (final item in (panelsByX.beforePointer(vStart) ?? OrderedMap())) {
+    //   if (item.v.x + item.v.panel.width >= x) {
+    //     panelsByX.atPointer(vStart)?.put(item.k, item.v);
+    //   }
+    // }
 
-    for (final item in (panelsByX.atPointer(vEnd) ?? OrderedMap())) {
-      if (item.v.x <= x) {
-        panelsByX.atPointer(vEnd)?.put(item.k, item.v);
-      }
-    }
+    // for (final item in (panelsByX.atPointer(vEnd) ?? OrderedMap())) {
+    //   if (item.v.x <= x) {
+    //     panelsByX.atPointer(vEnd)?.put(item.k, item.v);
+    //   }
+    // }
 
-    for (final v in panelsByX.rangedPointerValues(vStart, vEnd)) {
-      v.put(y, placement);
-    }
+    // for (final v in panelsByX.rangedPointerValues(vStart, vEnd)) {
+    //   v.put(y, placement);
+    // }
 
     final hStart = panelsByY.putIfAbsent(y, OrderedMap());
     final hEnd = panelsByY.putIfAbsent(y + panel.length, OrderedMap());
@@ -95,8 +95,8 @@ class PanelPlacements {
   ({bool ok, int? moveRightTo}) canPlacePanel(PanelInfo panel, int x, int y) {
     final placement = PanelPlacement(panel: panel, x: x, y: y);
 
-    for (final v in panelsByX.rangedValuesEnglobing(x, x + panel.width)) {
-      for (final item in v.rangedValuesEnglobing(y, y + panel.length)) {
+    for (final v in panelsByY.rangedValuesEnglobing(y, y + panel.length)) {
+      for (final item in v.rangedValuesEnglobing(x, x + panel.width)) {
         if (placement.intersects(item)) {
           return (ok: false, moveRightTo: item.x + item.panel.width);
         }
