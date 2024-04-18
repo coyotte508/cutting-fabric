@@ -410,23 +410,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 for (final panel in _panels) {
                   for (var i = 0; i < panel.quantity; i++) {
-                    panelArray.add(panel);
-                    placements.placePanelBottomLeft(panel);
+                    panelArray.add(panel.clone());
                   }
                 }
 
+                for (final panel in panelArray) {
+                  placements.placePanelBottomLeft(panel);
+                }
                 var bestPlacements = placements;
+                // re-clone panels
+                panelArray = panelArray.map((e) => e.clone()).toList();
 
                 for (var i = 0; i < 1000; i++) {
                   final newPlacements = PanelPlacements(fabricWidth: _fabric.width, pattern: _fabric.pattern);
                   panelArray.shuffle();
 
                   for (final panel in panelArray) {
+                    if (panel.canRotate && Random().nextBool()) {
+                      var tmp = panel.width;
+                      panel.width = panel.length;
+                      panel.length = tmp;
+                    }
                     newPlacements.placePanelBottomLeft(panel);
                   }
 
                   if (newPlacements.totalLength < bestPlacements.totalLength) {
                     bestPlacements = newPlacements;
+                    panelArray = panelArray.map((e) => e.clone()).toList();
                   }
                 }
 

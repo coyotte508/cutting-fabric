@@ -55,7 +55,7 @@ class PanelPlacements {
     placements.add(placement);
 
     final (hStart, addedStart) = panelsByY.putIfAbsent(y, OrderedMap());
-    final (hEnd, addedEnd) = panelsByY.putIfAbsent(y + panel.length - 1, OrderedMap());
+    final (hEnd, addedEnd) = panelsByY.putIfAbsent(y + panel.length, OrderedMap());
 
     if (addedStart) {
       for (final item in (panelsByY.beforePointer(hStart) ?? OrderedMap())) {
@@ -67,7 +67,7 @@ class PanelPlacements {
 
     if (addedEnd) {
       for (final item in (panelsByY.beforePointer(hEnd) ?? OrderedMap())) {
-        if (item.v.y + item.v.panel.length - 1 >= y) {
+        if (item.v.y + item.v.panel.length - 1 >= y + panel.length) {
           panelsByY.atPointer(hEnd)!.put(item.k, item.v);
         }
       }
@@ -98,7 +98,7 @@ class PanelPlacements {
     final hasGrid = pattern != null && panel.centerOnPattern;
     var iteratorY = panelsByY.iterator;
 
-    // debugPrint("Placing panel ${panel.width}x${panel.length} on fabric $fabricWidth with pattern $pattern");
+    // debugPrint("Placing panel ${panel.width}x${panel.length} ${panel.name}");
 
     if (!iteratorY.moveNext()) {
       // debugPrint("No panels yet, placing at 0, 0");
@@ -111,8 +111,6 @@ class PanelPlacements {
     while (iteratorY.moveNext()) {
       final nextY = iteratorY.current;
 
-      final gaps = _findGapsAtY(y.v, panel.width);
-
       final yCoord = hasGrid ? nextGridCoord(y.k, pattern!.length, panel.length) : y.k;
 
       if (yCoord > nextY.k) {
@@ -121,6 +119,8 @@ class PanelPlacements {
         continue;
       }
       // debugPrint("Y $yCoord");
+
+      final gaps = _findGapsAtY(y.v, panel.width);
 
       for (final gap in gaps) {
         // debugPrint("Gap at ${gap.start} to ${gap.end}");
@@ -144,7 +144,6 @@ class PanelPlacements {
   }
 
   Iterable<({int start, int end})> _findGapsAtY(OrderedMap<PanelPlacement> panels, int minWidth) sync* {
-    // debugPrint("Finding gaps at Y $minWidth");
     var prevX = 0;
 
     for (final item in panels) {
@@ -165,8 +164,8 @@ class PanelPlacements {
 }
 
 int nextGridCoord(int coord, int gridSize, int panelSize) {
+  final offset = (gridSize - (((panelSize - gridSize) ~/ 2) % gridSize)) % gridSize;
   // debugPrint("Next grid coord $coord $gridSize $panelSize");
-  final offset = ((panelSize - gridSize) ~/ 2 * (gridSize < panelSize ? 1 : -1)) % gridSize;
   // debugPrint("Offset $offset");
   return ((coord + gridSize - offset - 1) ~/ gridSize) * gridSize + offset;
 }

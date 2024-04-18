@@ -95,14 +95,14 @@ class OrderedMap<V> extends Iterable<({int k, V v})> {
     return (prev: pointer.exact, exact: pointer.next, next: pointer.next! + 1);
   }
 
-  /// Returns values in the range [start, endIncl]
+  /// Returns values in the range [start, endExcl[
   /// If there is no exact match for start, it will return the next value
-  /// If there is no exact match for endIncl, it will return the previous value
-  Iterable<V> rangedPointerValues(OrderedMapPointer start, OrderedMapPointer endIncl) sync* {
+  /// If there is no exact match for endExcl, it will return the previous value
+  Iterable<V> rangedPointerValues(OrderedMapPointer start, OrderedMapPointer endExcl) sync* {
     final startIndex = start.exact ?? start.next ?? _list.length;
-    final endIndex = min(endIncl.exact ?? endIncl.prev ?? 0, _list.length - 1);
+    final endIndex = min(endExcl.exact ?? endExcl.prev ?? 0, _list.length - 1);
 
-    for (var i = startIndex; i <= endIndex; i++) {
+    for (var i = startIndex; i < endIndex; i++) {
       yield _list[i].v;
     }
   }
