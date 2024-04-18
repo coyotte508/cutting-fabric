@@ -1,4 +1,6 @@
 import "dart:math";
+import 'package:flutter/material.dart';
+
 import './ordered_map.dart';
 import 'fabric.dart';
 
@@ -110,6 +112,7 @@ class PanelPlacements {
     var iteratorY = panelsByY.iterator;
 
     if (!iteratorY.moveNext()) {
+      debugPrint("No panels yet, placing at 0, 0");
       addPanel(panel, 0, 0);
       return;
     }
@@ -121,6 +124,7 @@ class PanelPlacements {
       final gaps = _findGapsAtY(y.v, panel.width);
 
       for (final gap in gaps) {
+        debugPrint("Gap at ${gap.start} to ${gap.end}");
         for (var x = gap.start; x <= gap.end - panel.width;) {
           final canPlace = canPlacePanel(panel, x, y.k);
           if (canPlace.ok) {
@@ -138,14 +142,20 @@ class PanelPlacements {
   }
 
   Iterable<({int start, int end})> _findGapsAtY(OrderedMap<PanelPlacement> panels, int minWidth) sync* {
+    debugPrint("Finding gaps at Y $minWidth");
     var prevX = 0;
 
     for (final item in panels) {
+      debugPrint("Panel at ${item.v.x} with width ${item.v.panel.width}");
       if (item.v.x - prevX >= minWidth) {
         yield (start: prevX, end: item.v.x);
       }
 
       prevX = item.v.x + item.v.panel.width;
+    }
+
+    if (fabricWidth - prevX >= minWidth) {
+      yield (start: prevX, end: fabricWidth);
     }
   }
 }

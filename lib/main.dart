@@ -405,13 +405,17 @@ class _MyHomePageState extends State<MyHomePage> {
             // Button to launch the cutting algorithm
             ElevatedButton(
               onPressed: () {
-                _placements = PanelPlacements(fabricWidth: _fabric.width);
+                var placements = PanelPlacements(fabricWidth: _fabric.width);
 
                 for (final panel in _panels) {
                   for (var i = 0; i < panel.quantity; i++) {
-                    _placements!.placePanelBottomLeft(panel);
+                    placements.placePanelBottomLeft(panel);
                   }
                 }
+
+                setState(() {
+                  _placements = placements;
+                });
 
                 debugPrint("done");
               },
