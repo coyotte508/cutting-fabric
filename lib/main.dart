@@ -405,16 +405,33 @@ class _MyHomePageState extends State<MyHomePage> {
             // Button to launch the cutting algorithm
             ElevatedButton(
               onPressed: () {
-                var placements = PanelPlacements(fabricWidth: _fabric.width);
+                final placements = PanelPlacements(fabricWidth: _fabric.width, pattern: _fabric.pattern);
+                List<PanelInfo> panelArray = [];
 
                 for (final panel in _panels) {
                   for (var i = 0; i < panel.quantity; i++) {
+                    panelArray.add(panel);
                     placements.placePanelBottomLeft(panel);
                   }
                 }
 
+                var bestPlacements = placements;
+
+                for (var i = 0; i < 1000; i++) {
+                  final newPlacements = PanelPlacements(fabricWidth: _fabric.width, pattern: _fabric.pattern);
+                  panelArray.shuffle();
+
+                  for (final panel in panelArray) {
+                    newPlacements.placePanelBottomLeft(panel);
+                  }
+
+                  if (newPlacements.totalLength < bestPlacements.totalLength) {
+                    bestPlacements = newPlacements;
+                  }
+                }
+
                 setState(() {
-                  _placements = placements;
+                  _placements = bestPlacements;
                 });
 
                 debugPrint("done");
@@ -436,12 +453,16 @@ class _MyHomePageState extends State<MyHomePage> {
                               _placements!.totalLength * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
                         );
                       }),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Prix total : ${_placements!.totalLength / 1000 * _fabric.pricePerMeter / 100} € pour ${_placements!.totalLength / 1000} m de tissu",
+                        style: const TextStyle(fontSize: 20.0),
+                      ),
                     )
                   ]
                 : []),
-            const SizedBox.square(
-              dimension: 10.0,
-            ),
           ],
         ),
       ),

@@ -54,16 +54,16 @@ class OrderedMap<V> extends Iterable<({int k, V v})> {
     return pointer.exact != null;
   }
 
-  OrderedMapPointer putIfAbsent(int k, V v) {
+  (OrderedMapPointer, bool added) putIfAbsent(int k, V v) {
     final pointer = this.pointer(k);
     if (pointer.exact != null) {
-      return pointer;
+      return (pointer, false);
     } else if (pointer.prev == null) {
       _list.insert(0, (k: k, v: v));
-      return (prev: null, exact: 0, next: _list.length > 1 ? 1 : null);
+      return ((prev: null, exact: 0, next: _list.length > 1 ? 1 : null), true);
     } else {
       _list.insert(pointer.prev! + 1, (k: k, v: v));
-      return (prev: pointer.prev, exact: pointer.prev! + 1, next: pointer.prev! + 2);
+      return ((prev: pointer.prev, exact: pointer.prev! + 1, next: pointer.prev! + 2), true);
     }
   }
 
@@ -109,17 +109,17 @@ class OrderedMap<V> extends Iterable<({int k, V v})> {
 
   /// Returns values in the range [start, endIncl]
   /// If there is no exact match for start, it will return the previous value
-  /// If there is no exact match for endIncl, it will return the next value
-  Iterable<V> rangedValuesEnglobing(int minKey, int maxKeyIncl) sync* {
+  /// If there is no exact match for endIncl, it will return the previous value
+  Iterable<V> rangedValuesEnglobingStart(int minKey, int maxKeyIncl) sync* {
     final startPointer = this.pointer(minKey);
     final startIndex = startPointer.exact ?? startPointer.prev ?? 0;
 
     for (var i = startIndex; i < _list.length; i++) {
-      yield _list[i].v;
-
-      if (_list[i].k >= maxKeyIncl) {
+      if (_list[i].k > maxKeyIncl) {
         break;
       }
+
+      yield _list[i].v;
     }
   }
 
