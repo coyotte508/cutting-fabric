@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {
-  final (int width, bool showPattern, PatternInfo?) Function() _patternGetter;
+  final (int width, bool showPattern, PatternInfo?, PanelPlacements placements) Function() _patternGetter;
 
   FabricPainter(this._patternGetter);
 
   PatternInfo? storedPattern;
   int? storedWidth;
+  PanelPlacements? storedPlacements;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final (width, showPattern, pattern) = _patternGetter();
+    final (width, showPattern, pattern, placements) = _patternGetter();
 
     final ratio = size.width / width;
 
     storedPattern = pattern;
     storedWidth = width;
+    storedPlacements = placements;
 
     final paint = Paint()
       ..color = Colors.green
@@ -31,6 +34,39 @@ class FabricPainter extends CustomPainter {
       ..close();
 
     canvas.drawPath(path, paint);
+
+    for (final placement in placements.placements) {
+      final x = placement.x * ratio;
+      final y = placement.y * ratio;
+      final width = placement.panel.width * ratio;
+      final height = placement.panel.length * ratio;
+
+      final panelPaint = Paint()
+        ..color = Colors.blue
+        ..strokeWidth = 1.0
+        ..style = PaintingStyle.fill;
+
+      canvas.drawRect(Rect.fromLTWH(x, y, width, height), panelPaint);
+
+      final textPainter = TextPainter(
+        text: TextSpan(
+          text: placement.panel.name,
+          style: const TextStyle(color: Colors.white),
+        ),
+        textDirection: TextDirection.ltr,
+      );
+
+      textPainter.layout(maxWidth: width);
+
+      textPainter.paint(canvas, Offset(x, y));
+
+      final borderPaint = Paint()
+        ..color = Colors.black
+        ..strokeWidth = 1.0
+        ..style = PaintingStyle.stroke;
+
+      canvas.drawRect(Rect.fromLTWH(x, y, width, height), borderPaint);
+    }
 
     if (pattern != null && showPattern) {
       final patternPaint = Paint()
@@ -60,7 +96,10 @@ class FabricPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) {
     final oldPattern = (oldDelegate as FabricPainter).storedPattern;
     final oldWidth = oldDelegate.storedWidth;
-    final (newWidth, _, newPattern) = _patternGetter();
+    final (newWidth, _, newPattern, placements) = _patternGetter();
+    if (storedPlacements != placements) {
+      return true;
+    }
     if (oldPattern == newPattern) {
       return false;
     }

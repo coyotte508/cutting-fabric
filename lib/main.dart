@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'package:upholstery_cutting_tool/panel_dialog.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
@@ -51,6 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _showPattern = true;
 
   late SharedPreferences prefs;
+
+  PanelPlacements? _placements;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -399,20 +402,39 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                   ]
                 : []),
+            // Button to launch the cutting algorithm
+            ElevatedButton(
+              onPressed: () {
+                _placements = PanelPlacements(fabricWidth: _fabric.width);
+
+                for (final panel in _panels) {
+                  for (var i = 0; i < panel.quantity; i++) {
+                    _placements!.placePanelBottomLeft(panel);
+                  }
+                }
+
+                debugPrint("done");
+              },
+              child: const Text("Lancer l'algorithme de découpe"),
+            ),
             const SizedBox.square(
               dimension: 10.0,
             ),
-            Container(
-              alignment: Alignment.center,
-              child: LayoutBuilder(builder: (context, constraints) {
-                return CustomPaint(
-                  painter: FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern)),
-                  // 2m length
-                  size: Size(min(constraints.maxWidth, maxCanvasWidth),
-                      2000 * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
-                );
-              }),
-            ),
+            ...(_placements != null
+                ? [
+                    Container(
+                      alignment: Alignment.center,
+                      child: LayoutBuilder(builder: (context, constraints) {
+                        return CustomPaint(
+                          painter: FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!)),
+                          // 2m length
+                          size: Size(min(constraints.maxWidth, maxCanvasWidth),
+                              _placements!.totalLength * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
+                        );
+                      }),
+                    )
+                  ]
+                : []),
             const SizedBox.square(
               dimension: 10.0,
             ),
