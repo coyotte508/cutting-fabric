@@ -1,6 +1,5 @@
 // Todo: use binary tree for better times
 
-import 'dart:collection';
 import 'dart:math';
 
 class OrderedMap<V> extends Iterable<({int k, V v})> {
@@ -130,6 +129,8 @@ class OrderedMap<V> extends Iterable<({int k, V v})> {
       yield item.k;
     }
   }
+
+  get lastCoordinate => _list.isEmpty ? 0 : _list.last.k;
 }
 
 typedef OrderedMapPointer = ({int? prev, int? exact, int? next});

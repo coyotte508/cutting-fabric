@@ -47,8 +47,7 @@ class PanelPlacements {
   final int fabricWidth;
   PatternInfo? pattern;
 
-  get totalLength =>
-      placements.fold(0, (previousValue, element) => max(previousValue, element.y + element.panel.length));
+  get totalLength => panelsByY.lastCoordinate;
 
   addPanel(PanelInfo panel, int x, int y) {
     final placement = PanelPlacement(panel: panel, x: x, y: y);
