@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:upholstery_cutting_tool/algorithm.dart';
@@ -11,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import "fabric.dart";
 
-void main() {
+void main() async {
   runApp(const MyApp());
 }
 
@@ -405,46 +406,18 @@ class _MyHomePageState extends State<MyHomePage> {
             // Button to launch the cutting algorithm
             ElevatedButton(
               onPressed: () {
-                final placements = PanelPlacements(fabricWidth: _fabric.width, pattern: _fabric.pattern);
-                List<PanelInfo> panelArray = [];
+                final width = _fabric.width;
 
-                for (final panel in _panels) {
-                  for (var i = 0; i < panel.quantity; i++) {
-                    panelArray.add(panel.clone());
-                  }
-                }
+                ReceivePort receivePort = ReceivePort();
+                receivePort.listen((message) {
+                  debugPrint("Isolate success ");
 
-                for (final panel in panelArray) {
-                  placements.placePanelBottomLeft(panel);
-                }
-                var bestPlacements = placements;
-                // re-clone panels
-                panelArray = panelArray.map((e) => e.clone()).toList();
-
-                for (var i = 0; i < 1000; i++) {
-                  final newPlacements = PanelPlacements(fabricWidth: _fabric.width, pattern: _fabric.pattern);
-                  panelArray.shuffle();
-
-                  for (final panel in panelArray) {
-                    if (panel.canRotate && Random().nextBool()) {
-                      var tmp = panel.width;
-                      panel.width = panel.length;
-                      panel.length = tmp;
-                    }
-                    newPlacements.placePanelBottomLeft(panel);
-                  }
-
-                  if (newPlacements.totalLength < bestPlacements.totalLength) {
-                    bestPlacements = newPlacements;
-                    panelArray = panelArray.map((e) => e.clone()).toList();
-                  }
-                }
-
-                setState(() {
-                  _placements = bestPlacements;
+                  setState(() => _placements = message);
                 });
-
-                debugPrint("done");
+                Isolate.spawn<(SendPort, int, PatternInfo?, List<PanelInfo>)>((message) {
+                  final placements = computeBestPlacement(message.$2, message.$3, message.$4);
+                  message.$1.send(placements);
+                }, (receivePort.sendPort, width, _fabric.pattern, _panels));
               },
               child: const Text("Lancer l'algorithme de découpe"),
             ),
@@ -478,4 +451,43 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+computeBestPlacement(int width, PatternInfo? pattern, List<PanelInfo> panels) {
+  final placements = PanelPlacements(fabricWidth: width, pattern: pattern);
+  List<PanelInfo> panelArray = [];
+
+  for (final panel in panels) {
+    for (var i = 0; i < panel.quantity; i++) {
+      panelArray.add(panel.clone());
+    }
+  }
+
+  for (final panel in panelArray) {
+    placements.placePanelBottomLeft(panel);
+  }
+  var bestPlacements = placements;
+  // re-clone panels
+  panelArray = panelArray.map((e) => e.clone()).toList();
+
+  for (var i = 0; i < 10000; i++) {
+    final newPlacements = PanelPlacements(fabricWidth: width, pattern: pattern);
+    panelArray.shuffle();
+
+    for (final panel in panelArray) {
+      if (panel.canRotate && Random().nextBool()) {
+        var tmp = panel.width;
+        panel.width = panel.length;
+        panel.length = tmp;
+      }
+      newPlacements.placePanelBottomLeft(panel);
+    }
+
+    if (newPlacements.totalLength < bestPlacements.totalLength) {
+      bestPlacements = newPlacements;
+      panelArray = panelArray.map((e) => e.clone()).toList();
+    }
+  }
+
+  return bestPlacements;
 }
