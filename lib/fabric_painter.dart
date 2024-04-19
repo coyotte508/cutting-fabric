@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'fabric.dart';
@@ -21,6 +23,23 @@ class FabricPainter extends CustomPainter {
     storedWidth = width;
     storedPlacements = placements;
 
+    final colors = [
+      Colors.red,
+      Colors.blue,
+      Colors.yellow,
+      Colors.purple,
+      Colors.orange,
+      Colors.pink,
+      Colors.teal,
+      Colors.cyan,
+      Colors.lime,
+      Colors.indigo,
+      Colors.amber,
+      Colors.brown,
+      Colors.grey,
+      Colors.blueGrey
+    ];
+
     final paint = Paint()
       ..color = Colors.green
       ..strokeWidth = 1.0
@@ -35,14 +54,21 @@ class FabricPainter extends CustomPainter {
 
     canvas.drawPath(path, paint);
 
+    final Map<String, Color> givenColors = {};
+
+    var i = 0;
     for (final placement in placements.placements) {
       final x = placement.x * ratio;
       final y = placement.y * ratio;
       final width = placement.panel.width * ratio;
       final height = placement.panel.length * ratio;
 
+      final color = givenColors.containsKey(placement.panel.name)
+          ? givenColors[placement.panel.name]!
+          : givenColors.putIfAbsent(placement.panel.name, () => colors[i++ % colors.length]);
+
       final panelPaint = Paint()
-        ..color = Colors.blue
+        ..color = color
         ..strokeWidth = 1.0
         ..style = PaintingStyle.fill;
 
@@ -51,14 +77,14 @@ class FabricPainter extends CustomPainter {
       final textPainter = TextPainter(
         text: TextSpan(
           text: placement.panel.name,
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white),
         ),
         textDirection: TextDirection.ltr,
       );
 
-      textPainter.layout(maxWidth: width);
+      textPainter.layout(maxWidth: width - 6);
 
-      textPainter.paint(canvas, Offset(x, y));
+      textPainter.paint(canvas, Offset(x + 3, y + 1));
 
       final borderPaint = Paint()
         ..color = Colors.black
@@ -75,19 +101,21 @@ class FabricPainter extends CustomPainter {
         ..style = PaintingStyle.stroke;
 
       for (var i = pattern.length; i < size.height / ratio; i += pattern.length) {
-        final path = Path()
-          ..moveTo(0, i * ratio)
-          ..lineTo(width * ratio, i * ratio);
-
-        canvas.drawPath(path, patternPaint);
+        drawDashedLine(
+            canvas: canvas,
+            p1: Offset(0, i * ratio),
+            p2: Offset(width * ratio, i * ratio),
+            pattern: [8, 4],
+            paint: paint);
       }
 
       for (var i = pattern.width; i < width; i += pattern.width) {
-        final path = Path()
-          ..moveTo(i * ratio, 0)
-          ..lineTo(i * ratio, size.height);
-
-        canvas.drawPath(path, patternPaint);
+        drawDashedLine(
+            canvas: canvas,
+            p1: Offset(i * ratio, 0),
+            p2: Offset(i * ratio, size.height),
+            pattern: [8, 4],
+            paint: paint);
       }
     }
   }
@@ -111,4 +139,28 @@ class FabricPainter extends CustomPainter {
     }
     return oldPattern.width != newPattern.width || oldPattern.length != newPattern.length;
   }
+}
+
+// From https://stackoverflow.com/a/74911486/835629
+void drawDashedLine({
+  required Canvas canvas,
+  required Offset p1,
+  required Offset p2,
+  required Iterable<double> pattern,
+  required Paint paint,
+}) {
+  assert(pattern.length.isEven);
+  final distance = (p2 - p1).distance;
+  final normalizedPattern = pattern.map((width) => width / distance).toList();
+  final points = <Offset>[];
+  double t = 0;
+  int i = 0;
+  while (t < 1) {
+    points.add(Offset.lerp(p1, p2, t)!);
+    t += normalizedPattern[i++]; // dashWidth
+    points.add(Offset.lerp(p1, p2, t.clamp(0, 1))!);
+    t += normalizedPattern[i++]; // dashSpace
+    i %= normalizedPattern.length;
+  }
+  canvas.drawPoints(PointMode.lines, points, paint);
 }
