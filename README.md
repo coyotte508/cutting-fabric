@@ -1,10 +1,14 @@
 # Cutting Fabric
 
-A flutter project to help uphosltery craftsmen to calculate the amount of fabric needed for their projects.
+A flutter project to help upholstery craftsmen to calculate the amount of fabric needed for their projects.
 
 <details>
   <summary>Screenshot</summary>
-<img src="https://github.com/coyotte508/cutting-fabric/assets/342922/ab116f85-7669-401d-9d0d-889381846ccd" height=600 />
+  <img
+    src="https://github.com/coyotte508/cutting-fabric/assets/342922/ab116f85-7669-401d-9d0d-889381846ccd"
+    height=600
+    alt="Screenshot"
+  />
 </details>
 
 ## Running the project
@@ -14,6 +18,12 @@ To run the project, you need to have flutter installed. Then, you can run the fo
 ```bash
 flutter gen-l10n
 flutter run
+```
+
+## Regeneration icons
+
+```bash
+dart run flutter_launcher_icons
 ```
 
 ## Algorithm
