@@ -2,8 +2,6 @@
 
 A flutter project to help uphosltery craftsmen to calculate the amount of fabric needed for their projects.
 
-It's possible to specify a pattern for the fabric and have cuts that are centered on that pattern.
-
 <details>
   <summary>Screenshot</summary>
 <img src="https://github.com/coyotte508/cutting-fabric/assets/342922/ab116f85-7669-401d-9d0d-889381846ccd" height=600 />
