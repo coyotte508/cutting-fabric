@@ -284,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                             TableCell(
                               child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
                                   child: Text(AppLocalizations.of(context)!.cutTableQuantity)),
                             ),
                             const TableCell(
@@ -313,87 +313,104 @@ class _MyHomePageState extends State<MyHomePage> {
                                           child: Text(cut.quantity.toString()))),
                                 ),
                                 TableCell(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      IconButton(
-                                          tooltip: cut.canRotate
-                                              ? AppLocalizations.of(context)!.tooltipAllowRotation
-                                              : AppLocalizations.of(context)!.tooltipAllowRotationNo,
-                                          onPressed: () {
-                                            setState(() {
-                                              cut.canRotate = !cut.canRotate;
-                                            });
-                                          },
-                                          icon: Icon(cut.canRotate
-                                              ? Icons.screen_rotation_outlined
-                                              : Icons.screen_lock_rotation_outlined)),
-                                      IconButton(
-                                          tooltip: cut.centerOnPattern
-                                              ? AppLocalizations.of(context)!.tooltipCenterOnPattern
-                                              : AppLocalizations.of(context)!.tooltipCenterOnPatternNo,
-                                          onPressed: _fabric.pattern != null
-                                              ? () {
-                                                  setState(() {
-                                                    cut.centerOnPattern = !cut.centerOnPattern;
-                                                  });
-                                                }
-                                              : null,
-                                          icon: Icon(cut.centerOnPattern
-                                              ? Icons.center_focus_strong
-                                              : Icons.center_focus_weak)),
-                                      IconButton(
-                                          onPressed: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return CutDialogContent(
-                                                    cut: cut.clone(),
-                                                    hasPattern: _fabric.pattern != null,
-                                                    onSave: (CutInfo updatedCut) {
-                                                      setState(() {
-                                                        _cuts[_cuts.indexOf(cut)] = updatedCut;
-                                                      });
-                                                      _writeCuts();
-                                                    },
-                                                  );
-                                                });
-                                          },
-                                          visualDensity: VisualDensity.compact,
-                                          icon: const Icon(Icons.edit)),
-                                      IconButton(
-                                          onPressed: () {
-                                            showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return AlertDialog(
-                                                    title: Text(AppLocalizations.of(context)!.deleteCutTitle),
-                                                    content:
-                                                        Text(AppLocalizations.of(context)!.deleteCutMessage(cut.name)),
-                                                    actions: [
-                                                      TextButton(
-                                                          onPressed: () {
-                                                            setState(() {
-                                                              _cuts.remove(cut);
-                                                            });
-                                                            Navigator.of(context).pop();
-                                                          },
-                                                          child: Text(AppLocalizations.of(context)!.yesCTA)),
-                                                      TextButton(
-                                                          onPressed: () {
-                                                            Navigator.of(context).pop();
-                                                          },
-                                                          child: Text(AppLocalizations.of(context)!.noCTA)),
-                                                    ],
-                                                  );
-                                                });
-                                          },
-                                          padding: EdgeInsets.zero,
-                                          visualDensity: VisualDensity.compact,
-                                          color: Colors.red,
-                                          icon: const Icon(Icons.delete_outlined))
-                                    ],
-                                  ),
+                                  child: Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            tooltip: cut.canRotate
+                                                ? AppLocalizations.of(context)!.tooltipAllowRotation
+                                                : AppLocalizations.of(context)!.tooltipAllowRotationNo,
+                                            onPressed: () {
+                                              setState(() {
+                                                cut.canRotate = !cut.canRotate;
+                                              });
+                                            },
+                                            icon: Icon(cut.canRotate
+                                                ? Icons.screen_rotation_outlined
+                                                : Icons.screen_lock_rotation_outlined),
+                                            padding: EdgeInsets.zero,
+                                            visualDensity: const VisualDensity(
+                                                horizontal: VisualDensity.minimumDensity,
+                                                vertical: VisualDensity.minimumDensity),
+                                          ),
+                                          IconButton(
+                                            tooltip: cut.centerOnPattern
+                                                ? AppLocalizations.of(context)!.tooltipCenterOnPattern
+                                                : AppLocalizations.of(context)!.tooltipCenterOnPatternNo,
+                                            onPressed: _fabric.pattern != null
+                                                ? () {
+                                                    setState(() {
+                                                      cut.centerOnPattern = !cut.centerOnPattern;
+                                                    });
+                                                  }
+                                                : null,
+                                            icon: Icon(cut.centerOnPattern
+                                                ? Icons.center_focus_strong
+                                                : Icons.center_focus_weak),
+                                            padding: EdgeInsets.zero,
+                                            visualDensity: const VisualDensity(
+                                                horizontal: VisualDensity.minimumDensity,
+                                                vertical: VisualDensity.minimumDensity),
+                                          ),
+                                          IconButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (BuildContext context) {
+                                                      return CutDialogContent(
+                                                        cut: cut.clone(),
+                                                        hasPattern: _fabric.pattern != null,
+                                                        onSave: (CutInfo updatedCut) {
+                                                          setState(() {
+                                                            _cuts[_cuts.indexOf(cut)] = updatedCut;
+                                                          });
+                                                          _writeCuts();
+                                                        },
+                                                      );
+                                                    });
+                                              },
+                                              padding: EdgeInsets.zero,
+                                              visualDensity: const VisualDensity(
+                                                  horizontal: VisualDensity.minimumDensity,
+                                                  vertical: VisualDensity.minimumDensity),
+                                              icon: const Icon(Icons.edit)),
+                                          IconButton(
+                                              onPressed: () {
+                                                showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title: Text(AppLocalizations.of(context)!.deleteCutTitle),
+                                                        content: Text(
+                                                            AppLocalizations.of(context)!.deleteCutMessage(cut.name)),
+                                                        actions: [
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                setState(() {
+                                                                  _cuts.remove(cut);
+                                                                });
+                                                                Navigator.of(context).pop();
+                                                              },
+                                                              child: Text(AppLocalizations.of(context)!.yesCTA)),
+                                                          TextButton(
+                                                              onPressed: () {
+                                                                Navigator.of(context).pop();
+                                                              },
+                                                              child: Text(AppLocalizations.of(context)!.noCTA)),
+                                                        ],
+                                                      );
+                                                    });
+                                              },
+                                              padding: EdgeInsets.zero,
+                                              visualDensity: const VisualDensity(
+                                                  horizontal: VisualDensity.minimumDensity,
+                                                  vertical: VisualDensity.minimumDensity),
+                                              color: Colors.red,
+                                              icon: const Icon(Icons.delete_outlined))
+                                        ],
+                                      )),
                                 )
                               ],
                             );
@@ -445,9 +462,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         prefs.setBool("showPattern", value!);
                       },
                       title: Text(AppLocalizations.of(context)!.showPattern),
-                    )
+                    ),
+                    const SizedBox.square(
+                      dimension: 3.0,
+                    ),
                   ]
-                : []),
+                : [const SizedBox.square(dimension: 10.0)]),
             // Button to launch the cutting algorithm
             ElevatedButton(
               onPressed: () {
@@ -483,8 +503,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         AppLocalizations.of(context)!.cuttingPlanDetailsMessage(
-                            intToM(_placements!.totalLength) * intToEuro(_fabric.pricePerMeter),
-                            intToM(_placements!.totalLength)),
+                            round2(intToM(_placements!.totalLength) * intToEuro(_fabric.pricePerMeter)),
+                            round2(intToM(_placements!.totalLength))),
                         style: const TextStyle(fontSize: 20.0),
                       ),
                     )
@@ -495,6 +515,10 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+}
+
+double round2(double value) {
+  return (value * 100).round() / 100;
 }
 
 computeBestPlacement(int width, PatternInfo? pattern, List<CutInfo> cuts) {
