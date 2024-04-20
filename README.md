@@ -16,7 +16,13 @@ flutter gen-l10n
 flutter run
 ```
 
-## Research
+## Algorithm
+
+We use the bottom-left heuristic in 10 000 randomized runs, for instant results.
+
+The problem has additional constraints compared to the original strip packing problem, such as rotation & centering cuts on patterns.
+
+### Research
 
 Research that can improve the algorithm:
 
