@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:upholstery_cutting_tool/utils.dart';
 import 'dart:math';
 import 'fabric.dart';
 
@@ -34,12 +35,12 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
 
     _fabricWidthController.addListener(() {
       setState(() {
-        _fabric.width = max(100, (double.parse(_fabricWidthController.text) * 10).round());
+        _fabric.width = cmToInt(max(10.0, double.parse(_fabricWidthController.text)));
       });
     });
     _pricePerMeterController.addListener(() {
       setState(() {
-        _fabric.pricePerMeter = (double.parse(_pricePerMeterController.text) * 100).round();
+        _fabric.pricePerMeter = euroToInt(double.parse(_pricePerMeterController.text));
       });
     });
     _fabricNameController.addListener(() {
@@ -49,20 +50,20 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
     });
     _patternWidthController.addListener(() {
       setState(() {
-        _fabric.pattern?.width = (double.parse(_patternWidthController.text) * 10).round();
+        _fabric.pattern?.width = cmToInt(double.parse(_patternWidthController.text));
       });
     });
     _patternLengthController.addListener(() {
       setState(() {
-        _fabric.pattern?.length = (double.parse(_patternLengthController.text) * 10).round();
+        _fabric.pattern?.length = cmToInt(double.parse(_patternLengthController.text));
       });
     });
 
-    _fabricWidthController.text = (_fabric.width / 10.0).toString();
-    _pricePerMeterController.text = (_fabric.pricePerMeter / 100.0).toString();
+    _fabricWidthController.text = (intToCm(_fabric.width)).toString();
+    _pricePerMeterController.text = (intToEuro(_fabric.pricePerMeter)).toString();
     _fabricNameController.text = _fabric.name;
-    _patternWidthController.text = ((_fabric.pattern ?? PatternInfo()).width / 10.0).toString();
-    _patternLengthController.text = ((_fabric.pattern ?? PatternInfo()).length / 10.0).toString();
+    _patternWidthController.text = (intToCm((_fabric.pattern ?? PatternInfo()).width)).toString();
+    _patternLengthController.text = (intToCm((_fabric.pattern ?? PatternInfo()).length)).toString();
   }
 
   @override

@@ -41,7 +41,7 @@ class FabricPainter extends CustomPainter {
     ];
 
     final paint = Paint()
-      ..color = Colors.green
+      ..color = Colors.black
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -96,7 +96,7 @@ class FabricPainter extends CustomPainter {
 
     if (pattern != null && showPattern) {
       final patternPaint = Paint()
-        ..color = Colors.green
+        ..color = darken(Colors.grey, 20)
         ..strokeWidth = 1.0
         ..style = PaintingStyle.stroke;
 
@@ -105,8 +105,8 @@ class FabricPainter extends CustomPainter {
             canvas: canvas,
             p1: Offset(0, i * ratio),
             p2: Offset(width * ratio, i * ratio),
-            pattern: [8, 4],
-            paint: paint);
+            pattern: [6, 4],
+            paint: patternPaint);
       }
 
       for (var i = pattern.width; i < width; i += pattern.width) {
@@ -114,8 +114,8 @@ class FabricPainter extends CustomPainter {
             canvas: canvas,
             p1: Offset(i * ratio, 0),
             p2: Offset(i * ratio, size.height),
-            pattern: [8, 4],
-            paint: paint);
+            pattern: [6, 4],
+            paint: patternPaint);
       }
     }
   }
@@ -163,4 +163,11 @@ void drawDashedLine({
     i %= normalizedPattern.length;
   }
   canvas.drawPoints(PointMode.lines, points, paint);
+}
+
+// https://stackoverflow.com/a/60191441/835629
+Color darken(Color c, [int percent = 10]) {
+  assert(1 <= percent && percent <= 100);
+  var f = 1 - percent / 100;
+  return Color.fromARGB(c.alpha, (c.red * f).round(), (c.green * f).round(), (c.blue * f).round());
 }

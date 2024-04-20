@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:upholstery_cutting_tool/utils.dart';
 import 'fabric.dart';
 
 class CutDialogContent extends StatefulWidget {
@@ -38,12 +39,12 @@ class _CutDialogContentState extends State<CutDialogContent> {
     });
     _cutWidthController.addListener(() {
       setState(() {
-        _cut.width = (double.parse(_cutWidthController.text) * 10).round();
+        _cut.width = cmToInt(double.parse(_cutWidthController.text));
       });
     });
     _cutLengthController.addListener(() {
       setState(() {
-        _cut.length = (double.parse(_cutLengthController.text) * 10).round();
+        _cut.length = cmToInt(double.parse(_cutLengthController.text));
       });
     });
     _cutQuantityController.addListener(() {
@@ -53,8 +54,8 @@ class _CutDialogContentState extends State<CutDialogContent> {
     });
 
     _cutNameController.text = _cut.name;
-    _cutWidthController.text = (_cut.width / 10.0).toString();
-    _cutLengthController.text = (_cut.length / 10.0).toString();
+    _cutWidthController.text = intToCm(_cut.width).toString();
+    _cutLengthController.text = intToCm((_cut.length)).toString();
     _cutQuantityController.text = _cut.quantity.toString();
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'package:upholstery_cutting_tool/cut_dialog.dart';
+import 'package:upholstery_cutting_tool/utils.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
@@ -126,14 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (!_initialized) {
       _fabric = FabricInfo(
-        width: 1400,
+        width: cmToInt(140),
         name: AppLocalizations.of(context)!.defaultFabricName,
-        pricePerMeter: 5000,
+        pricePerMeter: euroToInt(50),
       );
       _cuts = [
         CutInfo(
-            width: 500,
-            length: 500,
+            width: cmToInt(50),
+            length: cmToInt(50),
             quantity: 1,
             name: AppLocalizations.of(context)!.defaultCutName(1),
             centerOnPattern: false,
@@ -192,15 +193,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                         )),
                         children: [
-                          {"title": AppLocalizations.of(context)!.fabricWidth, "value": '${_fabric.width / 10.0} cm'},
+                          {"title": AppLocalizations.of(context)!.fabricWidth, "value": '${intToCm(_fabric.width)} cm'},
                           {
                             "title": AppLocalizations.of(context)!.fabricPricePerMeter,
-                            "value": '${_fabric.pricePerMeter / 100.0} €'
+                            "value": '${intToEuro(_fabric.pricePerMeter)} €'
                           },
                           {
                             "title": AppLocalizations.of(context)!.pattern,
                             "value": _fabric.pattern != null
-                                ? '${_fabric.pattern!.width / 10.0}x${_fabric.pattern!.length / 10.0} cm'
+                                ? '${intToCm(_fabric.pattern!.width)}x${intToCm(_fabric.pattern!.length)} cm'
                                 : AppLocalizations.of(context)!.noPattern
                           },
                         ].map((e) {
@@ -302,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 TableCell(
                                   child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Text("${cut.width / 10.0}x${cut.length / 10.0} cm")),
+                                      child: Text("${intToCm(cut.width)}x${intToCm(cut.length)} cm")),
                                 ),
                                 TableCell(
                                   child: Center(
@@ -410,10 +411,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   cut: CutInfo(
                                       canRotate: false,
                                       centerOnPattern: false,
-                                      length: 500,
+                                      length: cmToInt(50),
                                       name: AppLocalizations.of(context)!.defaultCutName(_cuts.length + 1),
                                       quantity: 1,
-                                      width: 500),
+                                      width: cmToInt(50)),
                                   hasPattern: _fabric.pattern != null,
                                   onSave: (CutInfo updatedCut) {
                                     setState(() {
@@ -472,7 +473,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: LayoutBuilder(builder: (context, constraints) {
                         return CustomPaint(
                           painter: FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!)),
-                          // 2m length
                           size: Size(min(constraints.maxWidth, maxCanvasWidth),
                               _placements!.totalLength * min(constraints.maxWidth, maxCanvasWidth) / _fabric.width),
                         );
@@ -482,8 +482,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         AppLocalizations.of(context)!.cuttingPlanDetailsMessage(
-                            _placements!.totalLength / 1000 * _fabric.pricePerMeter / 100,
-                            _placements!.totalLength / 1000),
+                            intToM(_placements!.totalLength) * intToEuro(_fabric.pricePerMeter),
+                            intToM(_placements!.totalLength)),
                         style: const TextStyle(fontSize: 20.0),
                       ),
                     )

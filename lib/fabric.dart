@@ -1,3 +1,5 @@
+import 'package:upholstery_cutting_tool/utils.dart';
+
 class FabricInfo {
   int width;
   String name;
@@ -36,12 +38,19 @@ class FabricInfo {
 
 class PatternInfo {
   PatternInfo({
-    this.width = 200,
-    this.length = 200,
-  });
+    int? width,
+    int? length,
+  }) {
+    if (width != null) {
+      this.width = width;
+    }
+    if (length != null) {
+      this.length = length;
+    }
+  }
 
-  int width;
-  int length;
+  int width = cmToInt(20);
+  int length = cmToInt(20);
 
   static fromJson(Map<String, dynamic> json) {
     return PatternInfo(
