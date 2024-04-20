@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:isolate';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'package:upholstery_cutting_tool/panel_dialog.dart';
@@ -25,31 +27,37 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Plan de coupe pour tissus',
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Plan de coupe pour tissus'),
+      home: const MyHomePage(),
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en'), // English
+        Locale('fr'), // French
+      ],
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FabricInfo _fabric = FabricInfo(
-    width: 1400,
-    name: "Super tissu",
-    pricePerMeter: 5000,
-  );
+  late FabricInfo _fabric;
+  bool _initialized = false;
+
   bool _showPattern = true;
 
   late SharedPreferences prefs;
@@ -110,9 +118,30 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  final List<PanelInfo> _panels = [
-    PanelInfo(width: 500, length: 500, quantity: 1, name: "Découpe 1", centerOnPattern: false, canRotate: false)
-  ];
+  late final List<PanelInfo> _panels;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (!_initialized) {
+      _fabric = FabricInfo(
+        width: 1400,
+        name: AppLocalizations.of(context)!.defaultFabricName,
+        pricePerMeter: 5000,
+      );
+      _panels = [
+        PanelInfo(
+            width: 500,
+            length: 500,
+            quantity: 1,
+            name: AppLocalizations.of(context)!.defaultPanelName(1),
+            centerOnPattern: false,
+            canRotate: false)
+      ];
+      _initialized = true;
+    }
+  }
 
   @override
   void initState() {
@@ -140,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(AppLocalizations.of(context)!.appBarTitle),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -151,8 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
-                    title: Text('Tissu "${_fabric.name}"'),
-                    subtitle: const Text('Caractéristiques du tissu'),
+                    title: Text(AppLocalizations.of(context)!.fabricCardTitle(_fabric.name)),
+                    subtitle: Text(AppLocalizations.of(context)!.fabricCardSubtitle),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
@@ -163,13 +192,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                         )),
                         children: [
-                          {"title": "Largeur de tissu", "value": '${_fabric.width / 10.0} cm'},
-                          {"title": "Prix au mètre", "value": '${_fabric.pricePerMeter / 100.0} €'},
+                          {"title": AppLocalizations.of(context)!.fabricWidth, "value": '${_fabric.width / 10.0} cm'},
                           {
-                            "title": "Motif",
+                            "title": AppLocalizations.of(context)!.fabricPricePerMeter,
+                            "value": '${_fabric.pricePerMeter / 100.0} €'
+                          },
+                          {
+                            "title": AppLocalizations.of(context)!.pattern,
                             "value": _fabric.pattern != null
                                 ? '${_fabric.pattern!.width / 10.0}x${_fabric.pattern!.length / 10.0} cm'
-                                : 'Non'
+                                : AppLocalizations.of(context)!.noPattern
                           },
                         ].map((e) {
                           return TableRow(
@@ -205,19 +237,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                 );
                               });
                         },
-                        child: const Text('Modifier'),
+                        child: Text(AppLocalizations.of(context)!.editCTA),
                       ),
                     ],
                   )
                 ],
               ),
             ),
+            const SizedBox.square(
+              dimension: 10.0,
+            ),
             Card(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const ListTile(
-                    title: Text('Découpes à réaliser'),
+                  ListTile(
+                    title: Text(AppLocalizations.of(context)!.panelCardTitle),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
@@ -234,17 +269,23 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 1.0,
                         )),
                         children: [
-                          const TableRow(children: [
+                          TableRow(children: [
                             TableCell(
-                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Nom')),
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(AppLocalizations.of(context)!.panelTableName)),
                             ),
                             TableCell(
-                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Dimensions')),
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(AppLocalizations.of(context)!.panelTableMeasurements)),
                             ),
                             TableCell(
-                              child: Padding(padding: EdgeInsets.symmetric(vertical: 8.0), child: Text('Qté')),
+                              child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  child: Text(AppLocalizations.of(context)!.panelTableQuantity)),
                             ),
-                            TableCell(
+                            const TableCell(
                               child: Padding(
                                 padding: EdgeInsets.symmetric(vertical: 8.0),
                                 child: Text(''),
@@ -274,7 +315,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
-                                          tooltip: panel.canRotate ? "Rotation autorisée" : "Rotation bloquée",
+                                          tooltip: panel.canRotate
+                                              ? AppLocalizations.of(context)!.tooltipAllowRotation
+                                              : AppLocalizations.of(context)!.tooltipAllowRotationNo,
                                           onPressed: () {
                                             setState(() {
                                               panel.canRotate = !panel.canRotate;
@@ -285,8 +328,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                               : Icons.screen_lock_rotation_outlined)),
                                       IconButton(
                                           tooltip: panel.centerOnPattern
-                                              ? "Centrer sur le motif"
-                                              : "Pas besoin de centrer sur le motif",
+                                              ? AppLocalizations.of(context)!.tooltipCenterOnPattern
+                                              : AppLocalizations.of(context)!.tooltipCenterOnPatternNo,
                                           onPressed: _fabric.pattern != null
                                               ? () {
                                                   setState(() {
@@ -322,9 +365,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 context: context,
                                                 builder: (context) {
                                                   return AlertDialog(
-                                                    title: const Text("Supprimer la découpe"),
-                                                    content: const Text(
-                                                        "Êtes-vous sûr de vouloir supprimer cette découpe ?"),
+                                                    title: Text(AppLocalizations.of(context)!.deletePanelTitle),
+                                                    content: Text(
+                                                        AppLocalizations.of(context)!.deletePanelMessage(panel.name)),
                                                     actions: [
                                                       TextButton(
                                                           onPressed: () {
@@ -333,12 +376,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             });
                                                             Navigator.of(context).pop();
                                                           },
-                                                          child: const Text("Oui")),
+                                                          child: Text(AppLocalizations.of(context)!.yesCTA)),
                                                       TextButton(
                                                           onPressed: () {
                                                             Navigator.of(context).pop();
                                                           },
-                                                          child: const Text("Non")),
+                                                          child: Text(AppLocalizations.of(context)!.noCTA)),
                                                     ],
                                                   );
                                                 });
@@ -368,7 +411,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       canRotate: false,
                                       centerOnPattern: false,
                                       length: 500,
-                                      name: "Découpe ${_panels.length + 1}",
+                                      name: AppLocalizations.of(context)!.defaultPanelName(_panels.length + 1),
                                       quantity: 1,
                                       width: 500),
                                   hasPattern: _fabric.pattern != null,
@@ -381,7 +424,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 );
                               });
                         },
-                        child: const Text('Ajouter'),
+                        child: Text(AppLocalizations.of(context)!.addCTA),
                       ),
                     ],
                   )
@@ -399,7 +442,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                         prefs.setBool("showPattern", value!);
                       },
-                      title: const Text("Afficher motif sur plan de coupe"),
+                      title: Text(AppLocalizations.of(context)!.showPattern),
                     )
                   ]
                 : []),
@@ -410,8 +453,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 ReceivePort receivePort = ReceivePort();
                 receivePort.listen((message) {
-                  debugPrint("Isolate success ");
-
                   setState(() => _placements = message);
                 });
                 Isolate.spawn<(SendPort, int, PatternInfo?, List<PanelInfo>)>((message) {
@@ -419,7 +460,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   message.$1.send(placements);
                 }, (receivePort.sendPort, width, _fabric.pattern, _panels));
               },
-              child: const Text("Lancer l'algorithme de découpe"),
+              child: Text(AppLocalizations.of(context)!.launchAlgorithmCTA),
             ),
             const SizedBox.square(
               dimension: 10.0,
@@ -440,7 +481,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        "Prix total : ${_placements!.totalLength / 1000 * _fabric.pricePerMeter / 100} € pour ${_placements!.totalLength / 1000} m de tissu",
+                        AppLocalizations.of(context)!.cuttingPlanDetailsMessage(
+                            _placements!.totalLength / 1000 * _fabric.pricePerMeter / 100,
+                            _placements!.totalLength / 1000),
                         style: const TextStyle(fontSize: 20.0),
                       ),
                     )

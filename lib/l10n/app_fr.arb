@@ -1,0 +1,111 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Coupe Tissu",
+  "@appTitle": {},
+  "appBarTitle": "Plans de coupe pour tissu",
+  "@appBarTitle": {},
+  "defaultPanelName": "Découpe {index}",
+  "@defaultPanelName": {
+    "placeholders": {
+      "index": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "defaultFabricName": "Super tissu",
+  "@defaultFabricName": {},
+  "fabricCardTitle": "Tissu \"{name}\"",
+  "@fabricCardTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Super tissu"
+      }
+    }
+  },
+  "fabricCardSubtitle": "Caractéristiques du tissu",
+  "@fabricCardSubtitle": {},
+  "fabricName": "Nom du tissu",
+  "@fabricName": {},
+  "fabricWidth": "Largeur du tissu",
+  "@fabricWidth": {},
+  "fabricPricePerMeter": "Prix au mètre",
+  "@fabricPricePerMeter": {},
+  "pattern": "Motif",
+  "@pattern": {},
+  "withPattern": "Avec motif",
+  "@withPattern": {},
+  "patternWidth": "Largeur du motif",
+  "@patternWidth": {},
+  "patternLength": "Longueur du motif",
+  "@patternLength": {},
+  "panelCardTitle": "Découpes",
+  "@panelCardTitle": {},
+  "panelName": "Nom de la découpe",
+  "@panelName": {},
+  "panelWidth": "Largeur de la découpe",
+  "@panelWidth": {},
+  "panelLength": "Longueur de la découpe",
+  "@panelLength": {},
+  "panelQuantity": "Nombre de découpes",
+  "@panelQuantity": {},
+  "panelCenterOnPattern": "Centrer sur le motif",
+  "@panelCenterOnPattern": {},
+  "panelAllowRotation": "Autoriser la rotation",
+  "@panelAllowRotation": {},
+  "panelTableName": "Nom",
+  "@panelTableName": {},
+  "panelTableMeasurements": "Dimensions",
+  "@panelTableMeasurements": {},
+  "panelTableQuantity": "Qté",
+  "@panelTableQuantity": {},
+  "editCTA": "Modifier",
+  "@editCTA": {},
+  "addCTA": "Ajouter",
+  "@addCTA": {},
+  "showPattern": "Afficher le motif sur le plan de coupe",
+  "@showPattern": {},
+  "launchAlgorithmCTA": "Lancer l''algorithme de découpe",
+  "@launchAlgorithmCTA": {},
+  "noPattern": "Aucun",
+  "@noPattern": {},
+  "yesCTA": "Oui",
+  "@yesCTA": {},
+  "noCTA": "Non",
+  "@noCTA": {},
+  "deletePanelTitle": "Supprimer la découpe",
+  "@deletePanelTitle": {},
+  "deletePanelMessage": "Voulez-vous vraiment supprimer la découpe \"{name}\" ?",
+  "@deletePanelMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Cut 1"
+      }
+    }
+  },
+  "cuttingPlanDetailsMessage": "Prix total : {price} € pour {length} m de tissu",
+  "@cuttingPlanDetailsMessage": {
+    "placeholders": {
+      "price": {
+        "type": "double",
+        "example": "100.0"
+      },
+      "length": {
+        "type": "double",
+        "example": "10.0"
+      }
+    }
+  },
+  "saveCTA": "Enregistrer",
+  "@saveCTA": {},
+  "tooltipAllowRotation": "Rotation autorisée",
+  "@tooltipAllowRotation": {},
+  "tooltipCenterOnPattern": "Centrer sur motif",
+  "@tooltipCenterOnPattern": {},
+  "tooltipAllowRotationNo": "Rotation bloquée",
+  "@tooltipAllowRotationNo": {},
+  "tooltipCenterOnPatternNo": "Ne pas centrer sur motif",
+  "@tooltipCenterOnPatternNo": {}
+}

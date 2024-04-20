@@ -1,0 +1,111 @@
+{
+  "@@locale": "en",
+  "appTitle": "Cutting Fabric",
+  "@appTitle": {},
+  "appBarTitle": "Cutting Plans for Fabric",
+  "@appBarTitle": {},
+  "defaultPanelName": "Cut {index}",
+  "@defaultPanelName": {
+    "placeholders": {
+      "index": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "defaultFabricName": "Amazing Fabric",
+  "@defaultFabricName": {},
+  "fabricCardTitle": "Fabric \"{name}\"",
+  "@fabricCardTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Amazing Fabric"
+      }
+    }
+  },
+  "fabricCardSubtitle": "Fabric details",
+  "@fabricCardSubtitle": {},
+  "fabricName": "Fabric name",
+  "@fabricName": {},
+  "fabricWidth": "Fabric width",
+  "@fabricWidth": {},
+  "fabricPricePerMeter": "Price per meter",
+  "@fabricPricePerMeter": {},
+  "pattern": "Pattern",
+  "@pattern": {},
+  "withPattern": "With pattern",
+  "@withPattern": {},
+  "patternWidth": "Pattern width",
+  "@patternWidth": {},
+  "patternLength": "Pattern length",
+  "@patternLength": {},
+  "panelCardTitle": "Cuts",
+  "@panelCardTitle": {},
+  "panelName": "Cut name",
+  "@panelName": {},
+  "panelWidth": "Cut width",
+  "@panelWidth": {},
+  "panelLength": "Cut length",
+  "@panelLength": {},
+  "panelQuantity": "Number of cuts",
+  "@panelQuantity": {},
+  "panelCenterOnPattern": "Center on pattern",
+  "@panelCenterOnPattern": {},
+  "panelAllowRotation": "Allow rotation",
+  "@panelAllowRotation": {},
+  "panelTableName": "Name",
+  "@panelTableName": {},
+  "panelTableMeasurements": "Measurements",
+  "@panelTableMeasurements": {},
+  "panelTableQuantity": "Qty",
+  "@panelTableQuantity": {},
+  "editCTA": "Edit",
+  "@editCTA": {},
+  "addCTA": "Add",
+  "@addCTA": {},
+  "showPattern": "Show pattern on cutting plan",
+  "@showPattern": {},
+  "launchAlgorithmCTA": "Launch cutting algorithm",
+  "@launchAlgorithmCTA": {},
+  "noPattern": "None",
+  "@noPattern": {},
+  "yesCTA": "Yes",
+  "@yesCTA": {},
+  "noCTA": "No",
+  "@noCTA": {},
+  "deletePanelTitle": "Delete cut",
+  "@deletePanelTitle": {},
+  "deletePanelMessage": "Are you sure you want to delete the cut \"{name}\"?",
+  "@deletePanelMessage": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Cut 1"
+      }
+    }
+  },
+  "cuttingPlanDetailsMessage": "Total price : {price} € for {length} m of fabric",
+  "@cuttingPlanDetailsMessage": {
+    "placeholders": {
+      "price": {
+        "type": "double",
+        "example": "100.0"
+      },
+      "length": {
+        "type": "double",
+        "example": "10.0"
+      }
+    }
+  },
+  "saveCTA": "Save",
+  "@saveCTA": {},
+  "tooltipAllowRotation": "Allow rotation",
+  "@tooltipAllowRotation": {},
+  "tooltipCenterOnPattern": "Center on pattern",
+  "@tooltipCenterOnPattern": {},
+  "tooltipAllowRotationNo": "Do not rotate",
+  "@tooltipAllowRotationNo": {},
+  "tooltipCenterOnPatternNo": "Do not center on pattern",
+  "@tooltipCenterOnPatternNo": {}
+}

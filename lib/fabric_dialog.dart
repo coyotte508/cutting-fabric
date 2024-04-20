@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'dart:math';
 import 'fabric.dart';
 
@@ -83,23 +84,23 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
                 widget.onSave(_fabric);
                 Navigator.of(context).pop();
               },
-              child: const Text('Save'))
+              child: Text(AppLocalizations.of(context)!.saveCTA))
         ],
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             TextField(
               controller: _fabricNameController,
-              decoration: const InputDecoration(labelText: 'Nom du tissu'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fabricName),
             ),
             TextField(
               controller: _fabricWidthController,
-              decoration: const InputDecoration(labelText: 'Largeur du tissu'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fabricWidth),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _pricePerMeterController,
-              decoration: const InputDecoration(labelText: 'Prix au mètre'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fabricPricePerMeter),
               keyboardType: TextInputType.number,
             ),
             CheckboxListTile(
@@ -116,18 +117,18 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
                   }
                 });
               },
-              title: const Text("Avec motif"),
+              title: Text(AppLocalizations.of(context)!.withPattern),
             ),
             ..._fabric.pattern != null
                 ? [
                     TextField(
                       controller: _patternWidthController,
-                      decoration: const InputDecoration(labelText: 'Largeur du motif'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.patternWidth),
                       keyboardType: TextInputType.number,
                     ),
                     TextField(
                       controller: _patternLengthController,
-                      decoration: const InputDecoration(labelText: 'Longueur du motif'),
+                      decoration: InputDecoration(labelText: AppLocalizations.of(context)!.patternLength),
                       keyboardType: TextInputType.number,
                     ),
                   ]

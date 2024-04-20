@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'fabric.dart';
 
 class PanelDialogContent extends StatefulWidget {
@@ -75,28 +76,28 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
                 widget.onSave(_panel);
                 Navigator.of(context).pop();
               },
-              child: const Text('Save'))
+              child: Text(AppLocalizations.of(context)!.saveCTA))
         ],
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             TextField(
               controller: _panelNameController,
-              decoration: const InputDecoration(labelText: 'Nom de la découpe'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.panelName),
             ),
             TextField(
               controller: _panelWidthController,
-              decoration: const InputDecoration(labelText: 'Largeur de la découpe'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.panelWidth),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _panelLengthController,
-              decoration: const InputDecoration(labelText: 'Longueur de la découpe'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.panelLength),
               keyboardType: TextInputType.number,
             ),
             TextField(
               controller: _panelQuantityController,
-              decoration: const InputDecoration(labelText: 'Nombre de découpes'),
+              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.panelQuantity),
               keyboardType: TextInputType.number,
             ),
             ...(widget.hasPattern
@@ -108,7 +109,7 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
                           _panel.centerOnPattern = value == true;
                         });
                       },
-                      title: const Text("Centrer sur le motif"),
+                      title: Text(AppLocalizations.of(context)!.panelCenterOnPattern),
                     )
                   ]
                 : []),
@@ -119,7 +120,7 @@ class _PanelDialogContentState extends State<PanelDialogContent> {
                   _panel.canRotate = value == true;
                 });
               },
-              title: const Text("Rotation autorisée"),
+              title: Text(AppLocalizations.of(context)!.panelAllowRotation),
             ),
           ],
         ));
