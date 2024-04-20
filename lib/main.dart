@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'dart:isolate';
+import 'dart:ui' as ui;
 
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cutting_fabric/algorithm.dart';
 import 'package:cutting_fabric/cut_dialog.dart';
 import 'package:cutting_fabric/utils.dart';
+// import 'package:open_file_plus/open_file_plus.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
@@ -67,6 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
+
+    return directory.path;
+  }
+
+  Future<String> get _tmpPath async {
+    final directory = await getTemporaryDirectory();
 
     return directory.path;
   }
@@ -469,21 +480,78 @@ class _MyHomePageState extends State<MyHomePage> {
                   ]
                 : [const SizedBox.square(dimension: 10.0)]),
             // Button to launch the cutting algorithm
-            ElevatedButton(
-              onPressed: () {
-                final width = _fabric.width;
+            Row(children: [
+              ElevatedButton(
+                onPressed: () {
+                  final width = _fabric.width;
 
-                ReceivePort receivePort = ReceivePort();
-                receivePort.listen((message) {
-                  setState(() => _placements = message);
-                });
-                Isolate.spawn<(SendPort, int, PatternInfo?, List<CutInfo>)>((message) {
-                  final placements = computeBestPlacement(message.$2, message.$3, message.$4);
-                  message.$1.send(placements);
-                }, (receivePort.sendPort, width, _fabric.pattern, _cuts));
-              },
-              child: Text(AppLocalizations.of(context)!.launchAlgorithmCTA),
-            ),
+                  ReceivePort receivePort = ReceivePort();
+                  receivePort.listen((message) {
+                    setState(() => _placements = message);
+                  });
+                  Isolate.spawn<(SendPort, int, PatternInfo?, List<CutInfo>)>((message) {
+                    final placements = computeBestPlacement(message.$2, message.$3, message.$4);
+                    message.$1.send(placements);
+                  }, (receivePort.sendPort, width, _fabric.pattern, _cuts));
+                },
+                child: Text(AppLocalizations.of(context)!.launchAlgorithmCTA),
+              ),
+              const Spacer(),
+              IconButton(
+                  onPressed: _placements != null
+                      ? () {
+                          final fileName = AppLocalizations.of(context)!
+                              .saveImageName(DateFormat("yyyy-MM-dd HH'h'mm").format(DateTime.now()));
+
+                          () async {
+                            final recorder = ui.PictureRecorder();
+                            final canvas = Canvas(recorder);
+                            final painter =
+                                FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!));
+                            final size = Size(800, 800 * _placements!.totalLength / _fabric.width);
+
+                            painter.paint(canvas, size);
+                            ui.Image renderedImage =
+                                await recorder.endRecording().toImage(size.width.floor(), size.height.floor());
+
+                            final pngBytes = await renderedImage.toByteData(format: ui.ImageByteFormat.png);
+
+                            final res = await FileSaver.instance.saveAs(
+                                name: fileName,
+                                bytes: pngBytes!.buffer.asUint8List(),
+                                ext: "png",
+                                mimeType: MimeType.png);
+                            //OpenFile.open(file.path);
+                            debugPrint(res);
+                            // OpenFile.open(res);
+                          }();
+                        }
+                      : null,
+                  icon: const Icon(Icons.download)),
+              IconButton(
+                  onPressed: _placements != null
+                      ? () async {
+                          final recorder = ui.PictureRecorder();
+                          final canvas = Canvas(recorder);
+                          final painter =
+                              FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!));
+                          final size = Size(800, 800 * _placements!.totalLength / _fabric.width);
+
+                          painter.paint(canvas, size);
+                          ui.Image renderedImage =
+                              await recorder.endRecording().toImage(size.width.floor(), size.height.floor());
+
+                          final pngBytes = await renderedImage.toByteData(format: ui.ImageByteFormat.png);
+
+                          final file = File("${await _tmpPath}/cutting_plan.png");
+
+                          await file.writeAsBytes(pngBytes!.buffer.asUint8List());
+
+                          Share.shareXFiles([XFile(file.path, mimeType: "image/png")]);
+                        }
+                      : null,
+                  icon: const Icon(Icons.share)),
+            ]),
             const SizedBox.square(
               dimension: 10.0,
             ),

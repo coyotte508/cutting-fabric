@@ -85,6 +85,14 @@
       }
     }
   },
+  "saveImageName": "Cutting plan {date}",
+  "@saveImageName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "saveCTA": "Save",
   "@saveCTA": {},
   "tooltipAllowRotation": "Allow rotation",

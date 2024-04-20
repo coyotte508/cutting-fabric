@@ -39,6 +39,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  # Maybe later when we want to open a PDF
+  # open_file_plus: "^3.4.1+1"
+  file_saver: "^0.2.12"
+  share_plus: "^8.0.3"
 
 dev_dependencies:
   flutter_test:

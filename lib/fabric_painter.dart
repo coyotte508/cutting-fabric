@@ -15,6 +15,10 @@ class FabricPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // First: fill with white (useful when exporting)
+    final whitePaint = Paint()..color = Colors.white;
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), whitePaint);
+
     final (width, showPattern, pattern, placements) = _patternGetter();
 
     final ratio = size.width / width;
