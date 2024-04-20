@@ -5,13 +5,13 @@ import 'package:upholstery_cutting_tool/algorithm.dart';
 import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {
-  final (int width, bool showPattern, PatternInfo?, PanelPlacements placements) Function() _patternGetter;
+  final (int width, bool showPattern, PatternInfo?, CutPlacements placements) Function() _patternGetter;
 
   FabricPainter(this._patternGetter);
 
   PatternInfo? storedPattern;
   int? storedWidth;
-  PanelPlacements? storedPlacements;
+  CutPlacements? storedPlacements;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -60,23 +60,23 @@ class FabricPainter extends CustomPainter {
     for (final placement in placements.placements) {
       final x = placement.x * ratio;
       final y = placement.y * ratio;
-      final width = placement.panel.width * ratio;
-      final height = placement.panel.length * ratio;
+      final width = placement.cut.width * ratio;
+      final height = placement.cut.length * ratio;
 
-      final color = givenColors.containsKey(placement.panel.name)
-          ? givenColors[placement.panel.name]!
-          : givenColors.putIfAbsent(placement.panel.name, () => colors[i++ % colors.length]);
+      final color = givenColors.containsKey(placement.cut.name)
+          ? givenColors[placement.cut.name]!
+          : givenColors.putIfAbsent(placement.cut.name, () => colors[i++ % colors.length]);
 
-      final panelPaint = Paint()
+      final cutPaint = Paint()
         ..color = color
         ..strokeWidth = 1.0
         ..style = PaintingStyle.fill;
 
-      canvas.drawRect(Rect.fromLTWH(x, y, width, height), panelPaint);
+      canvas.drawRect(Rect.fromLTWH(x, y, width, height), cutPaint);
 
       final textPainter = TextPainter(
         text: TextSpan(
-          text: placement.panel.name,
+          text: placement.cut.name,
           style: TextStyle(color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white),
         ),
         textDirection: TextDirection.ltr,

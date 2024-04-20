@@ -4,18 +4,18 @@ import 'package:flutter/material.dart';
 import './ordered_map.dart';
 import 'fabric.dart';
 
-class PanelPlacement {
-  PanelPlacement({required this.panel, required this.x, required this.y});
+class CutPlacement {
+  CutPlacement({required this.cut, required this.x, required this.y});
 
-  final PanelInfo panel;
+  final CutInfo cut;
   final int x;
   final int y;
 
-  bool intersects(PanelPlacement other) {
-    return x < other.x + other.panel.width &&
-        x + panel.width > other.x &&
-        y < other.y + other.panel.length &&
-        y + panel.length > other.y;
+  bool intersects(CutPlacement other) {
+    return x < other.x + other.cut.width &&
+        x + cut.width > other.x &&
+        y < other.y + other.cut.length &&
+        y + cut.length > other.y;
   }
 }
 
@@ -30,16 +30,16 @@ class Rectangle {
   get area => width * length;
 }
 
-class PanelPlacements {
-  PanelPlacements({required this.fabricWidth, this.pattern});
+class CutPlacements {
+  CutPlacements({required this.fabricWidth, this.pattern});
 
-  final List<PanelPlacement> placements = [];
+  final List<CutPlacement> placements = [];
 
-  // /// For a list of X coordinates, lists all panels that intersect with that X coordinate
-  // final OrderedMap<OrderedMap<PanelPlacement>> panelsByX = OrderedMap();
+  // /// For a list of X coordinates, lists all cuts that intersect with that X coordinate
+  // final OrderedMap<OrderedMap<CutPlacement>> cutsByX = OrderedMap();
 
-  /// For a list of Y coordinates, lists all panels that intersect with that Y coordinate
-  final OrderedMap<OrderedMap<PanelPlacement>> panelsByY = OrderedMap.of([(k: 0, v: OrderedMap<PanelPlacement>())]);
+  /// For a list of Y coordinates, lists all cuts that intersect with that Y coordinate
+  final OrderedMap<OrderedMap<CutPlacement>> cutsByY = OrderedMap.of([(k: 0, v: OrderedMap<CutPlacement>())]);
 
   // todo: maintain a list of "gaps" instead of computing them on the fly
   // it could even contain invalid gaps that would be invalidated when checked next time
@@ -47,45 +47,45 @@ class PanelPlacements {
   final int fabricWidth;
   PatternInfo? pattern;
 
-  get totalLength => panelsByY.lastCoordinate;
+  get totalLength => cutsByY.lastCoordinate;
 
-  addPanel(PanelInfo panel, int x, int y) {
-    final placement = PanelPlacement(panel: panel, x: x, y: y);
+  addCut(CutInfo cut, int x, int y) {
+    final placement = CutPlacement(cut: cut, x: x, y: y);
     placements.add(placement);
 
-    final (hStart, addedStart) = panelsByY.putIfAbsent(y, OrderedMap());
-    final (hEnd, addedEnd) = panelsByY.putIfAbsent(y + panel.length, OrderedMap());
+    final (hStart, addedStart) = cutsByY.putIfAbsent(y, OrderedMap());
+    final (hEnd, addedEnd) = cutsByY.putIfAbsent(y + cut.length, OrderedMap());
 
     if (addedStart) {
-      for (final item in (panelsByY.beforePointer(hStart) ?? OrderedMap())) {
-        if (item.v.y + item.v.panel.length - 1 >= y) {
-          panelsByY.atPointer(hStart)!.put(item.k, item.v);
+      for (final item in (cutsByY.beforePointer(hStart) ?? OrderedMap())) {
+        if (item.v.y + item.v.cut.length - 1 >= y) {
+          cutsByY.atPointer(hStart)!.put(item.k, item.v);
         }
       }
     }
 
     if (addedEnd) {
-      for (final item in (panelsByY.beforePointer(hEnd) ?? OrderedMap())) {
-        if (item.v.y + item.v.panel.length - 1 >= y + panel.length) {
-          panelsByY.atPointer(hEnd)!.put(item.k, item.v);
+      for (final item in (cutsByY.beforePointer(hEnd) ?? OrderedMap())) {
+        if (item.v.y + item.v.cut.length - 1 >= y + cut.length) {
+          cutsByY.atPointer(hEnd)!.put(item.k, item.v);
         }
       }
     }
 
-    for (final h in panelsByY.rangedPointerValues(hStart, hEnd)) {
+    for (final h in cutsByY.rangedPointerValues(hStart, hEnd)) {
       h.put(x, placement);
     }
   }
 
-  /// Returns a tuple with a boolean indicating if the panel can be placed at the given coordinates and if not,
-  ///  an integer indicating where the panel can be moved to the right to avoid the collision
-  ({bool ok, int? moveRightTo}) canPlacePanel(PanelInfo panel, int x, int y) {
-    final placement = PanelPlacement(panel: panel, x: x, y: y);
+  /// Returns a tuple with a boolean indicating if the cut can be placed at the given coordinates and if not,
+  ///  an integer indicating where the cut can be moved to the right to avoid the collision
+  ({bool ok, int? moveRightTo}) canPlaceCut(CutInfo cut, int x, int y) {
+    final placement = CutPlacement(cut: cut, x: x, y: y);
 
-    for (final v in panelsByY.rangedValuesEnglobingStart(y, y + panel.length - 1)) {
-      for (final item in v.rangedValuesEnglobingStart(x, x + panel.width - 1)) {
+    for (final v in cutsByY.rangedValuesEnglobingStart(y, y + cut.length - 1)) {
+      for (final item in v.rangedValuesEnglobingStart(x, x + cut.width - 1)) {
         if (placement.intersects(item)) {
-          return (ok: false, moveRightTo: item.x + item.panel.width);
+          return (ok: false, moveRightTo: item.x + item.cut.width);
         }
       }
     }
@@ -93,16 +93,16 @@ class PanelPlacements {
     return (ok: true, moveRightTo: null);
   }
 
-  void placePanelBottomLeft(PanelInfo panel) {
-    final hasGrid = pattern != null && panel.centerOnPattern;
-    var iteratorY = panelsByY.iterator;
+  void placeCutBottomLeft(CutInfo cut) {
+    final hasGrid = pattern != null && cut.centerOnPattern;
+    var iteratorY = cutsByY.iterator;
 
-    // debugPrint("Placing panel ${panel.width}x${panel.length} ${panel.name}");
+    // debugPrint("Placing cut ${cut.width}x${cut.length} ${cut.name}");
 
     if (!iteratorY.moveNext()) {
-      // debugPrint("No panels yet, placing at 0, 0");
-      addPanel(panel, hasGrid ? nextGridCoord(0, pattern!.width, panel.width) : 0,
-          hasGrid ? nextGridCoord(0, pattern!.length, panel.length) : 0);
+      // debugPrint("No cuts yet, placing at 0, 0");
+      addCut(cut, hasGrid ? nextGridCoord(0, pattern!.width, cut.width) : 0,
+          hasGrid ? nextGridCoord(0, pattern!.length, cut.length) : 0);
       return;
     }
 
@@ -110,7 +110,7 @@ class PanelPlacements {
     while (iteratorY.moveNext()) {
       final nextY = iteratorY.current;
 
-      final yCoord = hasGrid ? nextGridCoord(y.k, pattern!.length, panel.length) : y.k;
+      final yCoord = hasGrid ? nextGridCoord(y.k, pattern!.length, cut.length) : y.k;
 
       if (yCoord > nextY.k) {
         // debugPrint("Moving to next Y $nextY");
@@ -119,16 +119,16 @@ class PanelPlacements {
       }
       // debugPrint("Y $yCoord");
 
-      final gaps = _findGapsAtY(y.v, panel.width);
+      final gaps = _findGapsAtY(y.v, cut.width);
 
       for (final gap in gaps) {
         // debugPrint("Gap at ${gap.start} to ${gap.end}");
-        for (var x = hasGrid ? nextGridCoord(gap.start, pattern!.width, panel.width) : gap.start;
-            x <= gap.end - panel.width;
-            x = hasGrid ? nextGridCoord(x, pattern!.width, panel.width) : x) {
-          final canPlace = canPlacePanel(panel, x, yCoord);
+        for (var x = hasGrid ? nextGridCoord(gap.start, pattern!.width, cut.width) : gap.start;
+            x <= gap.end - cut.width;
+            x = hasGrid ? nextGridCoord(x, pattern!.width, cut.width) : x) {
+          final canPlace = canPlaceCut(cut, x, yCoord);
           if (canPlace.ok) {
-            addPanel(panel, x, yCoord);
+            addCut(cut, x, yCoord);
             return;
           } else {
             x = canPlace.moveRightTo!;
@@ -138,20 +138,20 @@ class PanelPlacements {
 
       y = nextY;
     }
-    addPanel(panel, hasGrid ? nextGridCoord(0, pattern!.width, panel.width) : 0,
-        hasGrid ? nextGridCoord(totalLength, pattern!.length, panel.length) : totalLength);
+    addCut(cut, hasGrid ? nextGridCoord(0, pattern!.width, cut.width) : 0,
+        hasGrid ? nextGridCoord(totalLength, pattern!.length, cut.length) : totalLength);
   }
 
-  Iterable<({int start, int end})> _findGapsAtY(OrderedMap<PanelPlacement> panels, int minWidth) sync* {
+  Iterable<({int start, int end})> _findGapsAtY(OrderedMap<CutPlacement> cuts, int minWidth) sync* {
     var prevX = 0;
 
-    for (final item in panels) {
-      // debugPrint("Panel at ${item.v.x} with width ${item.v.panel.width}");
+    for (final item in cuts) {
+      // debugPrint("Cut at ${item.v.x} with width ${item.v.cut.width}");
       if (item.v.x - prevX >= minWidth) {
         yield (start: prevX, end: item.v.x);
       }
 
-      prevX = item.v.x + item.v.panel.width;
+      prevX = item.v.x + item.v.cut.width;
     }
 
     // debugPrint("Remaining space ${fabricWidth - prevX} ${fabricWidth} ${prevX} ${minWidth}");
@@ -162,9 +162,9 @@ class PanelPlacements {
   }
 }
 
-int nextGridCoord(int coord, int gridSize, int panelSize) {
-  final offset = (gridSize - (((panelSize - gridSize) ~/ 2) % gridSize)) % gridSize;
-  // debugPrint("Next grid coord $coord $gridSize $panelSize");
+int nextGridCoord(int coord, int gridSize, int cutSize) {
+  final offset = (gridSize - (((cutSize - gridSize) ~/ 2) % gridSize)) % gridSize;
+  // debugPrint("Next grid coord $coord $gridSize $cutSize");
   // debugPrint("Offset $offset");
   return ((coord + gridSize - offset - 1) ~/ gridSize) * gridSize + offset;
 }

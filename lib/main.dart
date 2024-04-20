@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:upholstery_cutting_tool/algorithm.dart';
-import 'package:upholstery_cutting_tool/panel_dialog.dart';
+import 'package:upholstery_cutting_tool/cut_dialog.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late SharedPreferences prefs;
 
-  PanelPlacements? _placements;
+  CutPlacements? _placements;
 
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -75,9 +75,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return File('$path/fabrics.json');
   }
 
-  Future<File> get _panelsFile async {
+  Future<File> get _cutsFile async {
     final path = await _localPath;
-    return File('$path/panels.json');
+    return File('$path/cuts.json');
   }
 
   Future<void> _writeFabrics() async {
@@ -85,9 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
     await file.writeAsString(jsonEncode([_fabric.toJson()]));
   }
 
-  Future<void> _writePanels() async {
-    final file = await _panelsFile;
-    await file.writeAsString(jsonEncode(_panels.map((e) => e.toJson()).toList()));
+  Future<void> _writeCuts() async {
+    final file = await _cutsFile;
+    await file.writeAsString(jsonEncode(_cuts.map((e) => e.toJson()).toList()));
   }
 
   Future<void> _readFabrics() async {
@@ -103,22 +103,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Future<void> _readPanels() async {
-    final file = await _panelsFile;
+  Future<void> _readCuts() async {
+    final file = await _cutsFile;
     if (!await file.exists()) {
       return;
     }
     final contents = await file.readAsString();
-    final List<dynamic> panels = jsonDecode(contents).map((e) => PanelInfo.fromJson(e)).toList();
+    final List<dynamic> cuts = jsonDecode(contents).map((e) => CutInfo.fromJson(e)).toList();
     setState(() {
-      _panels.clear();
-      for (var panel in panels) {
-        _panels.add(panel);
+      _cuts.clear();
+      for (var cut in cuts) {
+        _cuts.add(cut);
       }
     });
   }
 
-  late final List<PanelInfo> _panels;
+  late final List<CutInfo> _cuts;
 
   @override
   void didChangeDependencies() {
@@ -130,12 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
         name: AppLocalizations.of(context)!.defaultFabricName,
         pricePerMeter: 5000,
       );
-      _panels = [
-        PanelInfo(
+      _cuts = [
+        CutInfo(
             width: 500,
             length: 500,
             quantity: 1,
-            name: AppLocalizations.of(context)!.defaultPanelName(1),
+            name: AppLocalizations.of(context)!.defaultCutName(1),
             centerOnPattern: false,
             canRotate: false)
       ];
@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     _readFabrics();
-    _readPanels();
+    _readCuts();
 
     SharedPreferences.getInstance().then((prefs) {
       this.prefs = prefs;
@@ -252,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
-                    title: Text(AppLocalizations.of(context)!.panelCardTitle),
+                    title: Text(AppLocalizations.of(context)!.cutCardTitle),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),
@@ -273,17 +273,17 @@ class _MyHomePageState extends State<MyHomePage> {
                             TableCell(
                               child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(AppLocalizations.of(context)!.panelTableName)),
+                                  child: Text(AppLocalizations.of(context)!.cutTableName)),
                             ),
                             TableCell(
                               child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(AppLocalizations.of(context)!.panelTableMeasurements)),
+                                  child: Text(AppLocalizations.of(context)!.cutTableMeasurements)),
                             ),
                             TableCell(
                               child: Padding(
                                   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                  child: Text(AppLocalizations.of(context)!.panelTableQuantity)),
+                                  child: Text(AppLocalizations.of(context)!.cutTableQuantity)),
                             ),
                             const TableCell(
                               child: Padding(
@@ -292,52 +292,52 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           ]),
-                          ..._panels.map((panel) {
+                          ..._cuts.map((cut) {
                             return TableRow(
                               children: [
                                 TableCell(
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(panel.name)),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0), child: Text(cut.name)),
                                 ),
                                 TableCell(
                                   child: Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                      child: Text("${panel.width / 10.0}x${panel.length / 10.0} cm")),
+                                      child: Text("${cut.width / 10.0}x${cut.length / 10.0} cm")),
                                 ),
                                 TableCell(
                                   child: Center(
                                       child: Padding(
                                           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                          child: Text(panel.quantity.toString()))),
+                                          child: Text(cut.quantity.toString()))),
                                 ),
                                 TableCell(
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       IconButton(
-                                          tooltip: panel.canRotate
+                                          tooltip: cut.canRotate
                                               ? AppLocalizations.of(context)!.tooltipAllowRotation
                                               : AppLocalizations.of(context)!.tooltipAllowRotationNo,
                                           onPressed: () {
                                             setState(() {
-                                              panel.canRotate = !panel.canRotate;
+                                              cut.canRotate = !cut.canRotate;
                                             });
                                           },
-                                          icon: Icon(panel.canRotate
+                                          icon: Icon(cut.canRotate
                                               ? Icons.screen_rotation_outlined
                                               : Icons.screen_lock_rotation_outlined)),
                                       IconButton(
-                                          tooltip: panel.centerOnPattern
+                                          tooltip: cut.centerOnPattern
                                               ? AppLocalizations.of(context)!.tooltipCenterOnPattern
                                               : AppLocalizations.of(context)!.tooltipCenterOnPatternNo,
                                           onPressed: _fabric.pattern != null
                                               ? () {
                                                   setState(() {
-                                                    panel.centerOnPattern = !panel.centerOnPattern;
+                                                    cut.centerOnPattern = !cut.centerOnPattern;
                                                   });
                                                 }
                                               : null,
-                                          icon: Icon(panel.centerOnPattern
+                                          icon: Icon(cut.centerOnPattern
                                               ? Icons.center_focus_strong
                                               : Icons.center_focus_weak)),
                                       IconButton(
@@ -345,14 +345,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                             showDialog(
                                                 context: context,
                                                 builder: (BuildContext context) {
-                                                  return PanelDialogContent(
-                                                    panel: panel.clone(),
+                                                  return CutDialogContent(
+                                                    cut: cut.clone(),
                                                     hasPattern: _fabric.pattern != null,
-                                                    onSave: (PanelInfo updatedPanel) {
+                                                    onSave: (CutInfo updatedCut) {
                                                       setState(() {
-                                                        _panels[_panels.indexOf(panel)] = updatedPanel;
+                                                        _cuts[_cuts.indexOf(cut)] = updatedCut;
                                                       });
-                                                      _writePanels();
+                                                      _writeCuts();
                                                     },
                                                   );
                                                 });
@@ -365,14 +365,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 context: context,
                                                 builder: (context) {
                                                   return AlertDialog(
-                                                    title: Text(AppLocalizations.of(context)!.deletePanelTitle),
-                                                    content: Text(
-                                                        AppLocalizations.of(context)!.deletePanelMessage(panel.name)),
+                                                    title: Text(AppLocalizations.of(context)!.deleteCutTitle),
+                                                    content:
+                                                        Text(AppLocalizations.of(context)!.deleteCutMessage(cut.name)),
                                                     actions: [
                                                       TextButton(
                                                           onPressed: () {
                                                             setState(() {
-                                                              _panels.remove(panel);
+                                                              _cuts.remove(cut);
                                                             });
                                                             Navigator.of(context).pop();
                                                           },
@@ -406,20 +406,20 @@ class _MyHomePageState extends State<MyHomePage> {
                           showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return PanelDialogContent(
-                                  panel: PanelInfo(
+                                return CutDialogContent(
+                                  cut: CutInfo(
                                       canRotate: false,
                                       centerOnPattern: false,
                                       length: 500,
-                                      name: AppLocalizations.of(context)!.defaultPanelName(_panels.length + 1),
+                                      name: AppLocalizations.of(context)!.defaultCutName(_cuts.length + 1),
                                       quantity: 1,
                                       width: 500),
                                   hasPattern: _fabric.pattern != null,
-                                  onSave: (PanelInfo updatedPanel) {
+                                  onSave: (CutInfo updatedCut) {
                                     setState(() {
-                                      _panels.add(updatedPanel);
+                                      _cuts.add(updatedCut);
                                     });
-                                    _writePanels();
+                                    _writeCuts();
                                   },
                                 );
                               });
@@ -455,10 +455,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 receivePort.listen((message) {
                   setState(() => _placements = message);
                 });
-                Isolate.spawn<(SendPort, int, PatternInfo?, List<PanelInfo>)>((message) {
+                Isolate.spawn<(SendPort, int, PatternInfo?, List<CutInfo>)>((message) {
                   final placements = computeBestPlacement(message.$2, message.$3, message.$4);
                   message.$1.send(placements);
-                }, (receivePort.sendPort, width, _fabric.pattern, _panels));
+                }, (receivePort.sendPort, width, _fabric.pattern, _cuts));
               },
               child: Text(AppLocalizations.of(context)!.launchAlgorithmCTA),
             ),
@@ -496,39 +496,39 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-computeBestPlacement(int width, PatternInfo? pattern, List<PanelInfo> panels) {
-  final placements = PanelPlacements(fabricWidth: width, pattern: pattern);
-  List<PanelInfo> panelArray = [];
+computeBestPlacement(int width, PatternInfo? pattern, List<CutInfo> cuts) {
+  final placements = CutPlacements(fabricWidth: width, pattern: pattern);
+  List<CutInfo> cutArray = [];
 
-  for (final panel in panels) {
-    for (var i = 0; i < panel.quantity; i++) {
-      panelArray.add(panel.clone());
+  for (final cut in cuts) {
+    for (var i = 0; i < cut.quantity; i++) {
+      cutArray.add(cut.clone());
     }
   }
 
-  for (final panel in panelArray) {
-    placements.placePanelBottomLeft(panel);
+  for (final cut in cutArray) {
+    placements.placeCutBottomLeft(cut);
   }
   var bestPlacements = placements;
-  // re-clone panels
-  panelArray = panelArray.map((e) => e.clone()).toList();
+  // re-clone cuts
+  cutArray = cutArray.map((e) => e.clone()).toList();
 
   for (var i = 0; i < 10000; i++) {
-    final newPlacements = PanelPlacements(fabricWidth: width, pattern: pattern);
-    panelArray.shuffle();
+    final newPlacements = CutPlacements(fabricWidth: width, pattern: pattern);
+    cutArray.shuffle();
 
-    for (final panel in panelArray) {
-      if (panel.canRotate && Random().nextBool()) {
-        var tmp = panel.width;
-        panel.width = panel.length;
-        panel.length = tmp;
+    for (final cut in cutArray) {
+      if (cut.canRotate && Random().nextBool()) {
+        var tmp = cut.width;
+        cut.width = cut.length;
+        cut.length = tmp;
       }
-      newPlacements.placePanelBottomLeft(panel);
+      newPlacements.placeCutBottomLeft(cut);
     }
 
     if (newPlacements.totalLength < bestPlacements.totalLength) {
       bestPlacements = newPlacements;
-      panelArray = panelArray.map((e) => e.clone()).toList();
+      cutArray = cutArray.map((e) => e.clone()).toList();
     }
   }
 

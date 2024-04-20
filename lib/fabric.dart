@@ -58,8 +58,8 @@ class PatternInfo {
   }
 }
 
-class PanelInfo {
-  PanelInfo({
+class CutInfo {
+  CutInfo({
     required this.width,
     required this.length,
     required this.name,
@@ -76,7 +76,7 @@ class PanelInfo {
   bool canRotate;
 
   static fromJson(Map<String, dynamic> json) {
-    return PanelInfo(
+    return CutInfo(
       width: json["width"],
       length: json["length"],
       name: json["name"],
@@ -97,7 +97,7 @@ class PanelInfo {
     };
   }
 
-  PanelInfo clone() {
-    return PanelInfo.fromJson(toJson());
+  CutInfo clone() {
+    return CutInfo.fromJson(toJson());
   }
 }
