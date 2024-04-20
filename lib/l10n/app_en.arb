@@ -13,21 +13,8 @@
       }
     }
   },
-  "defaultFabricName": "Amazing Fabric",
-  "@defaultFabricName": {},
-  "fabricCardTitle": "Fabric \"{name}\"",
-  "@fabricCardTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "Amazing Fabric"
-      }
-    }
-  },
-  "fabricCardSubtitle": "Fabric details",
-  "@fabricCardSubtitle": {},
-  "fabricName": "Fabric name",
-  "@fabricName": {},
+  "fabricCardTitle": "Fabric details",
+  "@fabricCardTitle": {},
   "fabricWidth": "Fabric width",
   "@fabricWidth": {},
   "fabricPricePerMeter": "Price per meter",

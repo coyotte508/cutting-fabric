@@ -13,21 +13,8 @@
       }
     }
   },
-  "defaultFabricName": "Super tissu",
-  "@defaultFabricName": {},
-  "fabricCardTitle": "Tissu \"{name}\"",
-  "@fabricCardTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String",
-        "example": "Super tissu"
-      }
-    }
-  },
-  "fabricCardSubtitle": "Caractéristiques du tissu",
-  "@fabricCardSubtitle": {},
-  "fabricName": "Nom du tissu",
-  "@fabricName": {},
+  "fabricCardTitle": "Caractéristiques du tissu",
+  "@fabricCardTitle": {},
   "fabricWidth": "Largeur du tissu",
   "@fabricWidth": {},
   "fabricPricePerMeter": "Prix au mètre",

@@ -1,14 +1,12 @@
-import 'package:upholstery_cutting_tool/utils.dart';
+import 'package:cutting_fabric/utils.dart';
 
 class FabricInfo {
   int width;
-  String name;
   int pricePerMeter;
   PatternInfo? pattern;
 
   FabricInfo({
     required this.width,
-    required this.name,
     required this.pricePerMeter,
     this.pattern,
   });
@@ -16,7 +14,6 @@ class FabricInfo {
   static fromJson(Map<String, dynamic> json) {
     return FabricInfo(
       width: json["width"],
-      name: json["name"],
       pricePerMeter: json["price"],
       pattern: json["pattern"] != null ? PatternInfo.fromJson(json["pattern"]) : null,
     );
@@ -25,7 +22,6 @@ class FabricInfo {
   Map<String, dynamic> toJson() {
     return {
       "width": width,
-      "name": name,
       "price": pricePerMeter,
       "pattern": pattern?.toJson(),
     };

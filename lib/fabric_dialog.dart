@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:upholstery_cutting_tool/utils.dart';
+import 'package:cutting_fabric/utils.dart';
 import 'dart:math';
 import 'fabric.dart';
 
@@ -24,7 +24,6 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
 
   final _fabricWidthController = TextEditingController();
   final _pricePerMeterController = TextEditingController();
-  final _fabricNameController = TextEditingController();
   final _patternWidthController = TextEditingController();
   final _patternLengthController = TextEditingController();
 
@@ -43,11 +42,6 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
         _fabric.pricePerMeter = euroToInt(double.parse(_pricePerMeterController.text));
       });
     });
-    _fabricNameController.addListener(() {
-      setState(() {
-        _fabric.name = _fabricNameController.text;
-      });
-    });
     _patternWidthController.addListener(() {
       setState(() {
         _fabric.pattern?.width = cmToInt(double.parse(_patternWidthController.text));
@@ -61,7 +55,6 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
 
     _fabricWidthController.text = (intToCm(_fabric.width)).toString();
     _pricePerMeterController.text = (intToEuro(_fabric.pricePerMeter)).toString();
-    _fabricNameController.text = _fabric.name;
     _patternWidthController.text = (intToCm((_fabric.pattern ?? PatternInfo()).width)).toString();
     _patternLengthController.text = (intToCm((_fabric.pattern ?? PatternInfo()).length)).toString();
   }
@@ -70,7 +63,6 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
   void dispose() {
     _fabricWidthController.dispose();
     _pricePerMeterController.dispose();
-    _fabricNameController.dispose();
     _patternWidthController.dispose();
     _patternLengthController.dispose();
     super.dispose();
@@ -90,10 +82,6 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            TextField(
-              controller: _fabricNameController,
-              decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fabricName),
-            ),
             TextField(
               controller: _fabricWidthController,
               decoration: InputDecoration(labelText: AppLocalizations.of(context)!.fabricWidth),

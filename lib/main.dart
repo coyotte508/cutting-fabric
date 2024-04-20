@@ -4,9 +4,9 @@ import 'dart:isolate';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:upholstery_cutting_tool/algorithm.dart';
-import 'package:upholstery_cutting_tool/cut_dialog.dart';
-import 'package:upholstery_cutting_tool/utils.dart';
+import 'package:cutting_fabric/algorithm.dart';
+import 'package:cutting_fabric/cut_dialog.dart';
+import 'package:cutting_fabric/utils.dart';
 import 'dart:math';
 import 'fabric_dialog.dart';
 import 'fabric_painter.dart';
@@ -128,7 +128,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!_initialized) {
       _fabric = FabricInfo(
         width: cmToInt(140),
-        name: AppLocalizations.of(context)!.defaultFabricName,
         pricePerMeter: euroToInt(50),
       );
       _cuts = [
@@ -173,16 +172,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(AppLocalizations.of(context)!.appBarTitle),
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
         child: ListView(
           children: <Widget>[
+            const SizedBox.square(
+              dimension: 8.0,
+            ),
             Card(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   ListTile(
-                    title: Text(AppLocalizations.of(context)!.fabricCardTitle(_fabric.name)),
-                    subtitle: Text(AppLocalizations.of(context)!.fabricCardSubtitle),
+                    title: Text(AppLocalizations.of(context)!.fabricCardTitle),
                   ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0.0),

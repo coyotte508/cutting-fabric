@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:upholstery_cutting_tool/algorithm.dart';
+import 'package:cutting_fabric/algorithm.dart';
 import 'fabric.dart';
 
 class FabricPainter extends CustomPainter {

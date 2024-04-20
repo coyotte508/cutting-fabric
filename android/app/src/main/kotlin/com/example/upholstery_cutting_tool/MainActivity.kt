@@ -1,4 +1,4 @@
-package com.example.upholstery_cutting_tool
+package com.example.cutting_fabric
 
 import io.flutter.embedding.android.FlutterActivity
 

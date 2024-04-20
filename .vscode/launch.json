@@ -5,18 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "upholstery_cutting_tool",
+      "name": "cutting_fabric",
       "request": "launch",
       "type": "dart"
     },
     {
-      "name": "upholstery_cutting_tool (profile mode)",
+      "name": "cutting_fabric (profile mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "profile"
     },
     {
-      "name": "upholstery_cutting_tool (release mode)",
+      "name": "cutting_fabric (release mode)",
       "request": "launch",
       "type": "dart",
       "flutterMode": "release"

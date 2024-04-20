@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:upholstery_cutting_tool/utils.dart';
+import 'package:cutting_fabric/utils.dart';
 import 'fabric.dart';
 
 class CutDialogContent extends StatefulWidget {
