@@ -87,6 +87,14 @@
   },
   "saveCTA": "Enregistrer",
   "@saveCTA": {},
+  "saveImageName": "Plan de coupe {date}",
+  "@saveImageName": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "tooltipAllowRotation": "Rotation autorisée",
   "@tooltipAllowRotation": {},
   "tooltipCenterOnPattern": "Centrer sur motif",

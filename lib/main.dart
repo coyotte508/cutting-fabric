@@ -325,7 +325,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 TableCell(
                                   child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                      // Appearance is different on android and linux, on android 0.0 padding is the best
+                                      padding: const EdgeInsets.symmetric(vertical: 0.0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [

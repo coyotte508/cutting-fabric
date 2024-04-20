@@ -98,8 +98,8 @@ class _FabricDialogContentState extends State<FabricDialogContent> {
                 setState(() {
                   if (value == true) {
                     _fabric.pattern = PatternInfo(
-                      width: (double.parse(_patternWidthController.text) * 10).round(),
-                      length: (double.parse(_patternLengthController.text) * 10).round(),
+                      width: cmToInt(double.parse(_patternWidthController.text)).round(),
+                      length: cmToInt(double.parse(_patternLengthController.text)).round(),
                     );
                   } else {
                     _fabric.pattern = null;
