@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: const [
         Locale('en'), // English
-        Locale('fr'), // French
+        // Locale('fr'), // French
       ],
     );
   }
@@ -326,7 +326,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 TableCell(
                                   child: Padding(
                                       // Appearance is different on android and linux, on android 0.0 padding is the best
-                                      padding: const EdgeInsets.symmetric(vertical: 0.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 8.0),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
@@ -510,6 +510,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             final painter =
                                 FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!));
                             final size = Size(800, 800 * _placements!.totalLength / _fabric.width);
+                            painter.textScale = 2.0;
 
                             painter.paint(canvas, size);
                             ui.Image renderedImage =
@@ -537,6 +538,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           final painter =
                               FabricPainter(() => (_fabric.width, _showPattern, _fabric.pattern, _placements!));
                           final size = Size(800, 800 * _placements!.totalLength / _fabric.width);
+                          painter.textScale = 2.0;
 
                           painter.paint(canvas, size);
                           ui.Image renderedImage =

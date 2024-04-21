@@ -9,6 +9,7 @@ class FabricPainter extends CustomPainter {
 
   FabricPainter(this._patternGetter);
 
+  double textScale = 1.0;
   PatternInfo? storedPattern;
   int? storedWidth;
   CutPlacements? storedPlacements;
@@ -83,6 +84,7 @@ class FabricPainter extends CustomPainter {
           text: placement.cut.name,
           style: TextStyle(color: color.computeLuminance() > 0.5 ? Colors.black : Colors.white),
         ),
+        textScaler: TextScaler.linear(textScale),
         textDirection: TextDirection.ltr,
       );
 
